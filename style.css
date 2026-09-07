@@ -30,19 +30,19 @@ body {
 
 /* 3. El Tablero (Contenedor de las columnas) */
 .board-container {
-    display: flex; /* Esto pone las columnas una al lado de la otra */
+    display: flex; 
     gap: 1.5rem;
     padding: 2rem;
-    align-items: flex-start; /* Para que las columnas crezcan hacia abajo según su contenido */
+    align-items: flex-start; 
 }
 
 /* 4. Las Columnas */
 .column {
     background-color: #ebecf0;
     border-radius: 8px;
-    width: 33%; /* Las 3 ocupan el mismo ancho */
+    width: 33%; 
     padding: 1rem;
-    min-height: 400px; /* Altura mínima para que no se vean vacías */
+    min-height: 400px; 
 }
 
 .column-header {
@@ -76,12 +76,12 @@ body {
     padding: 1rem;
     margin-bottom: 0.8rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-    cursor: grab; /* Cambia el cursor a una manita para indicar que se puede arrastrar */
+    cursor: grab; 
     transition: transform 0.2s ease;
 }
 
 .task-card:hover {
-    transform: translateY(-2px); /* Pequeño efecto de levantamiento al pasar el ratón */
+    transform: translateY(-2px); 
     box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
 
@@ -119,4 +119,49 @@ body {
 .task-list {
     min-height: 350px;
     height: 100%;
+}
+
+/* --- ESTILOS DEL MODAL --- */
+.modal {
+    padding: 2rem;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin: auto; 
+    width: 90%;
+    max-width: 400px;
+}
+
+/* El fondo oscuro que aparece detrás del modal */
+.modal::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.modal input, .modal textarea, .modal select {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid #5e6c84;
+    color: #5e6c84;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
 }

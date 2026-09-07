@@ -58,9 +58,30 @@
 
     </main>
 
-    <!-- MODALES (Ocultos por defecto, los rellenaremos más adelante) -->
-    <dialog id="modal-create-task" class="modal"></dialog>
-    <dialog id="modal-task-detail" class="modal"></dialog>
+    <!-- MODAL PARA CREAR TAREA -->
+    <dialog id="modal-create-task" class="modal">
+        <form id="form-create-task">
+            <h3>Crear Nueva Tarea</h3>
+            
+            <label for="task-title">Título:</label>
+            <input type="text" id="task-title" required placeholder="Ej: Diseñar logo">
+            
+            <label for="task-desc">Descripción:</label>
+            <textarea id="task-desc" required placeholder="Detalles de la tarea..."></textarea>
+            
+            <label for="task-priority">Prioridad:</label>
+            <select id="task-priority">
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
+            </select>
+            
+            <div class="modal-actions">
+                <button type="button" id="btn-cancel-task" class="btn-secondary">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar</button>
+            </div>
+        </form>
+    </dialog>
 
     <!-- Librería externa para el Drag & Drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>

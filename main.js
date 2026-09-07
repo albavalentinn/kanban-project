@@ -95,5 +95,63 @@ async function updateTaskStatus(id, newStatus) {
     }
 }
 
-// 5. ¡Damos la orden de arrancar!
+// 5. --- LÓGICA DEL MODAL ---
+const modalCreate = document.getElementById('modal-create-task');
+const btnOpenCreate = document.getElementById('btn-create-task');
+const btnCancelCreate = document.getElementById('btn-cancel-task');
+
+// Cuando hacemos clic en "+ Nueva Tarea", abrimos el modal
+btnOpenCreate.addEventListener('click', () => {
+    modalCreate.showModal(); 
+});
+
+// Cuando hacemos clic en "Cancelar", lo cerramos
+btnCancelCreate.addEventListener('click', () => {
+    modalCreate.close();
+});
+
+// 6. LÓGICA PARA CREAR UNA TAREA NUEVA (POST)
+const formCreate = document.getElementById('form-create-task');
+
+formCreate.addEventListener('submit', async (event) => {
+    // Esto es SUPER importante: evita que la página se recargue al darle a "Guardar"
+    event.preventDefault(); 
+
+    // 1. Recogemos los valores que has escrito en las cajas de texto
+    const titleValue = document.getElementById('task-title').value;
+    const descValue = document.getElementById('task-desc').value;
+    const priorityValue = document.getElementById('task-priority').value;
+
+    // 2. Preparamos el "paquete" con los datos para el servidor
+    const newTask = {
+        title: titleValue,
+        description: descValue,
+        priority: priorityValue,
+        status: 'todo', // Por defecto, siempre entran en la primera columna
+        dueDate: 'Sin fecha' // Como no le pusimos input de fecha, ponemos esto por defecto
+    };
+
+    // 3. Enviamos el paquete a la base de datos (POST)
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newTask) // Convertimos nuestro paquete a texto JSON
+        });
+        
+        console.log("¡Nueva tarea creada con éxito!");
+        
+        // 4. Si todo ha ido bien: limpiamos el formulario, cerramos el modal y recargamos las tarjetas
+        formCreate.reset(); 
+        modalCreate.close();
+        getTasks(); 
+
+    } catch (error) {
+        console.error("Error al guardar la nueva tarea:", error);
+    }
+});
+
+// 6. ¡Damos la orden de arrancar!
 getTasks();
