@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero Kanban</title>
+    <!-- Vinculamos el archivo de estilos vacío por ahora -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- CABECERA PRINCIPAL -->
+    <header class="app-header">
+        <h1 class="logo">Mi Kanban</h1>
+        
+        <!-- Panel de estadísticas rápidas -->
+        <div class="stats-panel" id="stats-panel">
+            <span>Por Hacer: <b id="count-todo">0</b></span> |
+            <span>En Proceso: <b id="count-doing">0</b></span> |
+            <span>Finalizado: <b id="count-done">0</b></span>
+        </div>
+
+        <!-- Buscador -->
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Buscar tarea...">
+        </div>
+    </header>
+
+    <!-- TABLERO KANBAN (Contenedor de las columnas) -->
+    <main class="board-container">
+        
+        <!-- COLUMNA 1: POR HACER -->
+        <section class="column" data-status="todo">
+            <header class="column-header">
+                <h2>Por Hacer</h2>
+                <!-- El botón para abrir el modal de crear tarea -->
+                <button id="btn-create-task" class="btn-primary">+ Nueva Tarea</button>
+            </header>
+            <!-- Aquí es donde JavaScript inyectará las tarjetas -->
+            <div class="task-list" id="todo-list"></div>
+        </section>
+
+        <!-- COLUMNA 2: EN PROCESO -->
+        <section class="column" data-status="doing">
+            <header class="column-header">
+                <h2>En Proceso</h2>
+            </header>
+            <div class="task-list" id="doing-list"></div>
+        </section>
+
+        <!-- COLUMNA 3: FINALIZADO -->
+        <section class="column" data-status="done">
+            <header class="column-header">
+                <h2>Finalizado</h2>
+            </header>
+            <div class="task-list" id="done-list"></div>
+        </section>
+
+    </main>
+
+    <!-- MODALES (Ocultos por defecto, los rellenaremos más adelante) -->
+    <dialog id="modal-create-task" class="modal"></dialog>
+    <dialog id="modal-task-detail" class="modal"></dialog>
+
+    <!-- Vinculamos el archivo de JavaScript -->
+    <script src="main.js"></script>
+</body>
+</html>
