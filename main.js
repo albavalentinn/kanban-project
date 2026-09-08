@@ -38,22 +38,27 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
     const passVal = document.getElementById('auth-password').value.trim();
 
     if (isLoginMode) {
-        // INICIAR SESIÓN
+        // INICIAR SESIÓN (Versión a prueba de bombas)
         try {
-            const res = await fetch(`${API_USERS}?username=${userVal}&password=${passVal}`);
+            const res = await fetch(API_USERS);
             const users = await res.json();
-            if (users.length > 0) {
-                iniciarSesion(users[0]);
+            
+            const foundUser = users.find(u => u.username === userVal && u.password === passVal);
+            
+            if (foundUser) {
+                iniciarSesion(foundUser);
             } else {
                 alert('Usuario o contraseña incorrectos. Inténtalo de nuevo.');
             }
         } catch (error) { console.error("Error al iniciar sesión", error); }
     } else {
-        // REGISTRO
+        // REGISTRO (Versión a prueba de bombas)
         try {
-            const resCheck = await fetch(`${API_USERS}?username=${userVal}`);
-            const exists = await resCheck.json();
-            if (exists.length > 0) {
+            const resCheck = await fetch(API_USERS);
+            const allUsers = await resCheck.json();
+            
+            const exists = allUsers.find(u => u.username === userVal);
+            if (exists) {
                 alert('Ese nombre de usuario ya está cogido. ¡Elige otro!');
                 return;
             }
@@ -78,7 +83,7 @@ function iniciarSesion(user) {
     appContainer.classList.remove('hidden');
     
     crearBotonCerrarSesion();
-    loadProjects(); // Carga solo los proyectos de este usuario
+    loadProjects(); 
 }
 
 function crearBotonCerrarSesion() {
@@ -88,7 +93,7 @@ function crearBotonCerrarSesion() {
         logoutBtn.id = 'btn-logout';
         logoutBtn.className = 'btn-text';
         logoutBtn.style.marginTop = 'auto'; // Lo empuja hacia abajo
-        logoutBtn.style.color = '#bf2600'; // Color rojo para destacar
+        logoutBtn.style.color = '#bf2600'; // Color rojo
         logoutBtn.innerHTML = `🚪 Cerrar Sesión (${currentUser.username})`;
         
         logoutBtn.onclick = () => {
@@ -116,7 +121,6 @@ function comprobarSesion() {
         appContainer.classList.add('hidden');
     }
 }
-
 
 // ==========================================
 // 2. GESTIÓN DE VISTAS (TABLERO VS LISTA)
@@ -172,7 +176,6 @@ function renderList(tasks) {
 // ==========================================
 async function loadProjects() {
     try {
-        // Pedimos al servidor solo los proyectos que tengan nuestro ID
         const response = await fetch(`${API_PROJECTS}?userId=${currentUser.id}`);
         allProjects = await response.json();
         
@@ -228,7 +231,6 @@ function renderManageProjectsList() {
     });
 }
 
-// Añadimos el ID del usuario al crear un proyecto
 document.getElementById('form-add-project').addEventListener('submit', async (event) => {
     event.preventDefault();
     const input = document.getElementById('new-project-name');
@@ -422,4 +424,4 @@ window.deleteTask = async function(taskId) {
 
 // ARRANQUE INICIAL
 initSortable(); 
-comprobarSesion(); // En vez de loadProjects(), primero comprobamos si alguien ya ha iniciado sesión
+comprobarSesion();
