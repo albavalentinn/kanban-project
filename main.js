@@ -5,20 +5,20 @@ const API_USERS = 'http://localhost:3000/users';
 let allTasks = []; 
 let allProjects = []; 
 let currentUser = null; 
+let currentPriorityFilter = 'all'; // NUEVO: Guarda el filtro activo de la lista
 
 const projectSelect = document.getElementById('project-select');
 const authContainer = document.getElementById('auth-container');
 const appContainer = document.getElementById('app-container');
 
 // ==========================================
-// 1. SISTEMA DE AUTENTICACIÓN (LOGIN/REGISTRO)
+// 1. SISTEMA DE AUTENTICACIÓN
 // ==========================================
 let isLoginMode = true;
 
 document.getElementById('auth-switch-link').addEventListener('click', (e) => {
     e.preventDefault();
     isLoginMode = !isLoginMode;
-    
     if (isLoginMode) {
         document.getElementById('auth-title').innerText = 'Iniciar Sesión';
         document.getElementById('btn-auth-submit').innerText = 'Entrar';
@@ -44,17 +44,14 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
             const foundUser = users.find(u => u.username === userVal && u.password === passVal);
             if (foundUser) {
                 iniciarSesion(foundUser);
-            } else {
-                alert('Usuario o contraseña incorrectos. Inténtalo de nuevo.');
-            }
-        } catch (error) { console.error("Error al iniciar sesión", error); }
+            } else { alert('Usuario o contraseña incorrectos.'); }
+        } catch (error) { console.error("Error", error); }
     } else {
         try {
             const resCheck = await fetch(API_USERS);
             const allUsers = await resCheck.json();
-            const exists = allUsers.find(u => u.username === userVal);
-            if (exists) {
-                alert('Ese nombre de usuario ya está cogido. ¡Elige otro!');
+            if (allUsers.find(u => u.username === userVal)) {
+                alert('Usuario cogido. ¡Elige otro!');
                 return;
             }
             const newUser = { id: 'user-' + Date.now(), username: userVal, password: passVal };
@@ -65,7 +62,7 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
             });
             const createdUser = await res.json();
             iniciarSesion(createdUser);
-        } catch (error) { console.error("Error al registrar", error); }
+        } catch (error) { console.error("Error", error); }
     }
 });
 
@@ -87,7 +84,6 @@ function crearBotonCerrarSesion() {
         logoutBtn.style.marginTop = 'auto'; 
         logoutBtn.style.color = '#bf2600'; 
         logoutBtn.innerHTML = `🚪 Cerrar Sesión (${currentUser.username})`;
-        
         logoutBtn.onclick = () => {
             localStorage.removeItem('kanban_user');
             currentUser = null;
@@ -173,16 +169,12 @@ async function loadProjects() {
     try {
         const response = await fetch(API_PROJECTS);
         const todosLosProyectos = await response.json();
-        
         allProjects = todosLosProyectos.filter(proj => proj.userIds && proj.userIds.includes(currentUser.id));
-        
         projectSelect.innerHTML = ''; 
         
         if (allProjects.length === 0) {
             projectSelect.innerHTML = '<option value="">Sin proyectos</option>';
-            renderTasks([]); 
-            renderList([]);
-            return;
+            renderTasks([]); renderList([]); return;
         }
 
         allProjects.forEach(proj => {
@@ -191,25 +183,23 @@ async function loadProjects() {
             option.textContent = proj.name;
             projectSelect.appendChild(option);
         });
-
         getTasks(); 
-    } catch (error) { console.error("Error al cargar proyectos:", error); }
+    } catch (error) { console.error("Error", error); }
 }
 
 projectSelect.addEventListener('change', () => {
     document.getElementById('search-input').value = ''; 
+    currentPriorityFilter = 'all'; // Resetea el filtro al cambiar de proyecto
+    document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('active');
+        if(b.getAttribute('data-priority') === 'all') b.classList.add('active');
+    });
     getTasks();
 });
 
 const modalManageProjects = document.getElementById('modal-manage-projects');
-
-document.getElementById('btn-manage-projects').addEventListener('click', () => {
-    renderManageProjectsList();
-    modalManageProjects.showModal();
-});
-document.getElementById('btn-close-manage-projects').addEventListener('click', () => {
-    modalManageProjects.close();
-});
+document.getElementById('btn-manage-projects').addEventListener('click', () => { renderManageProjectsList(); modalManageProjects.showModal(); });
+document.getElementById('btn-close-manage-projects').addEventListener('click', () => modalManageProjects.close());
 
 function renderManageProjectsList() {
     const list = document.getElementById('manage-projects-list');
@@ -230,115 +220,71 @@ function renderManageProjectsList() {
     });
 }
 
-// NUEVA FUNCIÓN: Eliminar a alguien del proyecto
-window.removeFromProject = async function(projectId) {
-    const usernameToRemove = prompt("Introduce el nombre de usuario que quieres expulsar:");
-    if (!usernameToRemove) return;
-    
-    try {
-        // 1. Buscamos al usuario por su nombre
-        const res = await fetch(API_USERS);
-        const allUsers = await res.json();
-        const userToRemove = allUsers.find(u => u.username === usernameToRemove.trim());
-        
-        if (!userToRemove) {
-            alert("No existe ningún usuario con ese nombre.");
-            return;
-        }
-
-        // Evitamos que te borres a ti misma por accidente
-        if (userToRemove.id === currentUser.id) {
-            alert("¡No puedes expulsarte a ti misma de tu propio proyecto!");
-            return;
-        }
-        
-        // 2. Traemos el proyecto actual
-        const projRes = await fetch(`${API_PROJECTS}/${projectId}`);
-        const project = await projRes.json();
-        
-        // 3. Comprobamos si realmente estaba en el equipo
-        if (!project.userIds.includes(userToRemove.id)) {
-            alert("Ese usuario no forma parte de este proyecto.");
-            return;
-        }
-        
-        // 4. Lo borramos de la lista usando .filter()
-        const nuevaLista = project.userIds.filter(id => id !== userToRemove.id);
-        
-        // 5. Guardamos los cambios
-        await fetch(`${API_PROJECTS}/${projectId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userIds: nuevaLista })
-        });
-        
-        alert(`¡Listo! El usuario ${userToRemove.username} ha sido eliminado del proyecto.`);
-        await loadProjects();
-        renderManageProjectsList();
-        
-    } catch (error) {
-        console.error("Error al expulsar:", error);
-    }
-};
-
 window.inviteToProject = async function(projectId) {
     const usernameToInvite = prompt("Introduce el nombre de usuario de tu compañero:");
     if (!usernameToInvite) return;
-    
     try {
         const res = await fetch(API_USERS);
         const allUsers = await res.json();
         const userToInvite = allUsers.find(u => u.username === usernameToInvite.trim());
-        
-        if (!userToInvite) {
-            alert("No existe ningún usuario con ese nombre.");
-            return;
-        }
+        if (!userToInvite) { alert("No existe usuario con ese nombre."); return; }
         
         const projRes = await fetch(`${API_PROJECTS}/${projectId}`);
         const project = await projRes.json();
-        
-        if (project.userIds.includes(userToInvite.id)) {
-            alert("Ese usuario ya está en este proyecto.");
-            return;
-        }
+        if (project.userIds.includes(userToInvite.id)) { alert("Ya está en este proyecto."); return; }
         
         project.userIds.push(userToInvite.id);
-        
         await fetch(`${API_PROJECTS}/${projectId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userIds: project.userIds })
         });
+        alert(`¡Misión cumplida! ${userToInvite.username} ahora tiene acceso.`);
+        await loadProjects(); renderManageProjectsList();
+    } catch (error) { console.error("Error", error); }
+};
+
+window.removeFromProject = async function(projectId) {
+    const usernameToRemove = prompt("Introduce el nombre del usuario a expulsar:");
+    if (!usernameToRemove) return;
+    try {
+        const res = await fetch(API_USERS);
+        const allUsers = await res.json();
+        const userToRemove = allUsers.find(u => u.username === usernameToRemove.trim());
+        if (!userToRemove) { alert("No existe usuario con ese nombre."); return; }
+        if (userToRemove.id === currentUser.id) { alert("¡No puedes expulsarte a ti misma!"); return; }
         
-        alert(`¡Misión cumplida! ${userToInvite.username} ahora tiene acceso al proyecto.`);
-        await loadProjects();
-        renderManageProjectsList();
+        const projRes = await fetch(`${API_PROJECTS}/${projectId}`);
+        const project = await projRes.json();
+        if (!project.userIds.includes(userToRemove.id)) { alert("No forma parte del proyecto."); return; }
         
-    } catch (error) {
-        console.error("Error al invitar:", error);
-    }
+        const nuevaLista = project.userIds.filter(id => id !== userToRemove.id);
+        await fetch(`${API_PROJECTS}/${projectId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userIds: nuevaLista })
+        });
+        alert(`¡Listo! Usuario expulsado.`);
+        await loadProjects(); renderManageProjectsList();
+    } catch (error) { console.error("Error", error); }
 };
 
 document.getElementById('form-add-project').addEventListener('submit', async (event) => {
     event.preventDefault();
     const input = document.getElementById('new-project-name');
     const newId = 'proyecto-' + Date.now();
-
     try {
         await fetch(API_PROJECTS, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: newId, name: input.value, userIds: [currentUser.id] })
         });
-        input.value = '';
-        await loadProjects(); 
-        renderManageProjectsList(); 
-    } catch (error) { console.error("Error al crear proyecto:", error); }
+        input.value = ''; await loadProjects(); renderManageProjectsList(); 
+    } catch (error) { console.error("Error", error); }
 });
 
 window.editProject = async function(id, oldName) {
-    const newName = prompt("Introduce el nuevo nombre del proyecto:", oldName);
+    const newName = prompt("Introduce nuevo nombre:", oldName);
     if (!newName || newName === oldName) return;
     try {
         await fetch(`${API_PROJECTS}/${id}`, {
@@ -346,18 +292,16 @@ window.editProject = async function(id, oldName) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: newName })
         });
-        await loadProjects();
-        renderManageProjectsList();
-    } catch (error) { console.error("Error al renombrar:", error); }
+        await loadProjects(); renderManageProjectsList();
+    } catch (error) { console.error("Error", error); }
 };
 
 window.deleteProject = async function(id) {
     if (!confirm("¿Seguro que quieres borrar este proyecto entero?")) return;
     try {
         await fetch(`${API_PROJECTS}/${id}`, { method: 'DELETE' });
-        await loadProjects();
-        renderManageProjectsList();
-    } catch (error) { console.error("Error al borrar:", error); }
+        await loadProjects(); renderManageProjectsList();
+    } catch (error) { console.error("Error", error); }
 };
 
 // ==========================================
@@ -366,9 +310,7 @@ window.deleteProject = async function(id) {
 async function getTasks() {
     try {
         const currentProject = projectSelect.value;
-        if (!currentProject) {
-            renderTasks([]); renderList([]); return; 
-        }
+        if (!currentProject) { renderTasks([]); renderList([]); return; }
 
         const response = await fetch(`${API_URL}?projectId=${currentProject}`);
         allTasks = await response.json(); 
@@ -383,8 +325,16 @@ async function getTasks() {
             );
         }
         
+        // El tablero recibe TODAS las tareas (solo afectadas por buscador)
         renderTasks(finalTasks); 
-        renderList(finalTasks); 
+        
+        // La lista recibe las tareas filtradas también por prioridad
+        let listTasks = finalTasks;
+        if (currentPriorityFilter !== 'all') {
+            listTasks = finalTasks.filter(task => task.priority === currentPriorityFilter);
+        }
+        renderList(listTasks); 
+        
     } catch (error) { console.error("Error al cargar tareas:", error); }
 }
 
@@ -409,7 +359,6 @@ function renderTasks(tasks) {
                 </div>
             </article>
         `;
-
         if (task.status === 'todo') { document.getElementById('todo-list').innerHTML += cardHTML; todoCount++; }
         else if (task.status === 'doing') { document.getElementById('doing-list').innerHTML += cardHTML; doingCount++; }
         else if (task.status === 'done') { document.getElementById('done-list').innerHTML += cardHTML; doneCount++; }
@@ -450,7 +399,6 @@ document.getElementById('btn-cancel-task').addEventListener('click', () => modal
 document.getElementById('form-create-task').addEventListener('submit', async (event) => {
     event.preventDefault(); 
     if(!projectSelect.value) { alert("¡Crea un proyecto primero!"); return; }
-
     const newTask = {
         title: document.getElementById('task-title').value,
         description: document.getElementById('task-desc').value,
@@ -465,11 +413,10 @@ document.getElementById('form-create-task').addEventListener('submit', async (ev
         body: JSON.stringify(newTask)
     });
     document.getElementById('form-create-task').reset(); 
-    modalCreate.close();
-    getTasks(); 
+    modalCreate.close(); getTasks(); 
 });
 
-document.getElementById('search-input').addEventListener('input', () => { getTasks(); });
+document.getElementById('search-input').addEventListener('input', () => getTasks());
 
 const modalEdit = document.getElementById('modal-edit-task');
 document.getElementById('btn-cancel-edit').addEventListener('click', () => modalEdit.close());
@@ -500,16 +447,30 @@ document.getElementById('form-edit-task').addEventListener('submit', async (even
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData)
     });
-    modalEdit.close();
-    getTasks(); 
+    modalEdit.close(); getTasks(); 
 });
 
 window.deleteTask = async function(taskId) {
-    if (confirm("¿Estás seguro de que quieres borrar esta tarea definitivamente?")) {
+    if (confirm("¿Borrar definitivamente?")) {
         await fetch(`${API_URL}/${taskId}`, { method: 'DELETE' });
         getTasks(); 
     }
 };
+
+// ==========================================
+// 5. EVENTOS FILTROS DE PRIORIDAD
+// ==========================================
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        // Quitamos la clase active a todos los botones
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        // Se la ponemos al que hemos clicado
+        e.currentTarget.classList.add('active');
+        // Guardamos el filtro y recargamos
+        currentPriorityFilter = e.currentTarget.getAttribute('data-priority');
+        getTasks();
+    });
+});
 
 // ARRANQUE INICIAL
 initSortable(); 

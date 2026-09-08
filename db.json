@@ -56,6 +56,42 @@
       "dueDate": "2026-09-11",
       "projectId": "proyecto-1",
       "id": "HPKi9VsU2YY"
+    },
+    {
+      "title": "Diseñar una aplicación web ",
+      "description": "(nivel 1)",
+      "priority": "Alta",
+      "status": "doing",
+      "dueDate": "2026-09-11",
+      "projectId": "proyecto-1",
+      "id": "jidwI5q9bDI"
+    },
+    {
+      "title": "Maquetar una aplicación desktop y responsive",
+      "description": " (nivel 1)",
+      "priority": "Alta",
+      "status": "done",
+      "dueDate": "2026-09-12",
+      "projectId": "proyecto-1",
+      "id": "fpf0ndkzSJk"
+    },
+    {
+      "title": "Crear una página web dinámica con interactividad avanzada y consumo de API REST ",
+      "description": "(nivel 1)",
+      "priority": "Alta",
+      "status": "done",
+      "dueDate": "2026-09-12",
+      "projectId": "proyecto-1",
+      "id": "9B25DFRs0yA"
+    },
+    {
+      "title": "Implementar operaciones CRUD completas con persistencia en el servidor",
+      "description": " (nivel 1)",
+      "priority": "Alta",
+      "status": "done",
+      "dueDate": "2026-09-12",
+      "projectId": "proyecto-1",
+      "id": "TZm8Q9uLWAU"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

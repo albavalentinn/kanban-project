@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
+  <defs>
+    <!-- Degradado para darle un toque moderno -->
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0052cc" />
+      <stop offset="100%" stop-color="#003d99" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Columna 1 (Por Hacer - Gris claro) -->
+  <rect x="15" y="35" width="20" height="30" rx="6" fill="#e1e4e8" />
+  
+  <!-- Columna 2 (En Proceso - Azul claro) -->
+  <rect x="40" y="20" width="20" height="60" rx="6" fill="#4c9aff" />
+  
+  <!-- Columna 3 (Finalizado - Azul corporativo con degradado) -->
+  <rect x="65" y="45" width="20" height="35" rx="6" fill="url(#blueGradient)" />
+  
+  <!-- Detalle visual: un pequeño check en la última columna -->
+  <path d="M 69 62 L 73 66 L 81 55" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

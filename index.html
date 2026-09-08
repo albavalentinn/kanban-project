@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GetOrganized</title>
+   <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
@@ -89,6 +90,13 @@
 
             <!-- VISTA DE LISTA -->
             <section id="list-board" class="list-board hidden">
+                <!-- FILTROS DE PRIORIDAD (Solo en lista) -->
+        <div class="list-filters">
+            <button class="filter-btn active" data-priority="all">Todas</button>
+            <button class="filter-btn" data-priority="Alta"><span class="dot red"></span> Alta</button>
+            <button class="filter-btn" data-priority="Media"><span class="dot blue"></span> Media</button>
+            <button class="filter-btn" data-priority="Baja"><span class="dot grey"></span> Baja</button>
+        </div>
                 <div class="list-header">
                     <span>Tarea</span>
                     <span>Prioridad</span>

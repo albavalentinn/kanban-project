@@ -499,6 +499,43 @@ body {
 }
 
 /* =========================================
+   10. FILTROS DE LISTA
+   ========================================= */
+.list-filters {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+.filter-btn {
+    background: #ffffff;
+    border: 1px solid #dfe1e6;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #42526e;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+.filter-btn.active, .filter-btn:hover {
+    background: #ebecf0;
+    border-color: #0052cc;
+    color: #0052cc;
+}
+.filter-btn .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+.dot.red { background: #ff5630; }
+.dot.blue { background: #0065ff; }
+.dot.grey { background: #6b778c; }
+
+/* =========================================
    9. ADAPTACIÓN A MÓVILES (RESPONSIVE DESIGN)
    ========================================= */
 @media (max-width: 768px) {
