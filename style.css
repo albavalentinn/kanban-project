@@ -245,7 +245,7 @@ body {
 }
 .btn-secondary {
   background-color: transparent;
-  color: #5e6c84;
+  color: #63f46a7a;
   border: none;
   padding: 0.6rem 1.2rem;
   font-weight: bold;
@@ -533,7 +533,7 @@ body {
 }
 .dot.red { background: #ff5630; }
 .dot.blue { background: #0065ff; }
-.dot.grey { background: #6b778c; }
+.dot.green { background: #36b37e; }
 
 /* =========================================
    9. ADAPTACIÓN A MÓVILES (RESPONSIVE DESIGN)

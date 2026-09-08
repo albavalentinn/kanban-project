@@ -42,7 +42,7 @@
     {
       "title": "Commit",
       "description": "Haz de vez en cuando",
-      "priority": "Alta",
+      "priority": "Baja",
       "status": "todo",
       "dueDate": "2026-09-13",
       "projectId": "proyecto-1",
