@@ -4,25 +4,35 @@
       "id": "user-1",
       "username": "alba",
       "password": "123"
+    },
+    {
+      "id": "user-2",
+      "username": "cliente",
+      "password": "123"
     }
   ],
   "projects": [
     {
       "id": "proyecto-1",
       "name": "Ingeniería Core",
-      "userId": "user-1"
+      "userIds": [
+        "user-1",
+        "user-2"
+      ]
     },
     {
       "id": "proyecto-2",
       "name": "Diseño Web",
-      "userId": "user-1"
+      "userIds": [
+        "user-1"
+      ]
     }
   ],
   "tasks": [
     {
       "id": "1",
-      "title": "Diseñar maqueta en Stich",
-      "description": "Crear los wireframes y prototipos interactivos del tablero.",
+      "title": "Diseñar maqueta",
+      "description": "Crear wireframes interactivos.",
       "priority": "Alta",
       "dueDate": "2026-09-15",
       "status": "todo",
@@ -30,12 +40,13 @@
     },
     {
       "id": "2",
-      "title": "Configurar json-server",
-      "description": "Iniciar la API simulada con las colecciones de tareas.",
+      "title": "Configurar servidor",
+      "description": "Iniciar la API simulada.",
       "priority": "Media",
       "dueDate": "2026-09-10",
       "status": "doing",
       "projectId": "proyecto-1"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

@@ -4,7 +4,7 @@ const API_USERS = 'http://localhost:3000/users';
 
 let allTasks = []; 
 let allProjects = []; 
-let currentUser = null; // Guardará el usuario activo
+let currentUser = null; 
 
 const projectSelect = document.getElementById('project-select');
 const authContainer = document.getElementById('auth-container');
@@ -38,13 +38,10 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
     const passVal = document.getElementById('auth-password').value.trim();
 
     if (isLoginMode) {
-        // INICIAR SESIÓN (Versión a prueba de bombas)
         try {
             const res = await fetch(API_USERS);
             const users = await res.json();
-            
             const foundUser = users.find(u => u.username === userVal && u.password === passVal);
-            
             if (foundUser) {
                 iniciarSesion(foundUser);
             } else {
@@ -52,17 +49,14 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
             }
         } catch (error) { console.error("Error al iniciar sesión", error); }
     } else {
-        // REGISTRO (Versión a prueba de bombas)
         try {
             const resCheck = await fetch(API_USERS);
             const allUsers = await resCheck.json();
-            
             const exists = allUsers.find(u => u.username === userVal);
             if (exists) {
                 alert('Ese nombre de usuario ya está cogido. ¡Elige otro!');
                 return;
             }
-            
             const newUser = { id: 'user-' + Date.now(), username: userVal, password: passVal };
             const res = await fetch(API_USERS, {
                 method: 'POST',
@@ -78,10 +72,8 @@ document.getElementById('auth-form').addEventListener('submit', async (e) => {
 function iniciarSesion(user) {
     currentUser = user;
     localStorage.setItem('kanban_user', JSON.stringify(user));
-    
     authContainer.classList.add('hidden');
     appContainer.classList.remove('hidden');
-    
     crearBotonCerrarSesion();
     loadProjects(); 
 }
@@ -92,8 +84,8 @@ function crearBotonCerrarSesion() {
         const logoutBtn = document.createElement('button');
         logoutBtn.id = 'btn-logout';
         logoutBtn.className = 'btn-text';
-        logoutBtn.style.marginTop = 'auto'; // Lo empuja hacia abajo
-        logoutBtn.style.color = '#bf2600'; // Color rojo
+        logoutBtn.style.marginTop = 'auto'; 
+        logoutBtn.style.color = '#bf2600'; 
         logoutBtn.innerHTML = `🚪 Cerrar Sesión (${currentUser.username})`;
         
         logoutBtn.onclick = () => {
@@ -147,20 +139,23 @@ btnList.addEventListener('click', () => {
 function renderList(tasks) {
     const listContent = document.getElementById('list-content');
     listContent.innerHTML = '';
+    
     tasks.forEach(task => {
         let statusText = '';
         if(task.status === 'todo') statusText = 'Por Hacer';
         if(task.status === 'doing') statusText = 'En Proceso';
         if(task.status === 'done') statusText = 'Finalizado';
 
+        const isDone = task.status === 'done' ? 'text-strikethrough' : '';
+
         listContent.innerHTML += `
             <div class="list-row" data-id="${task.id}">
                 <div class="list-row-title">
-                    <h4>${task.title}</h4>
-                    <p>${task.description}</p>
+                    <h4 class="${isDone}">${task.title}</h4>
+                    <p class="${isDone}">${task.description}</p>
                 </div>
                 <div><span class="badge ${task.priority.toLowerCase()}">${task.priority}</span></div>
-                <div class="date">📅 ${task.dueDate}</div>
+                <div class="date ${isDone}">📅 ${task.dueDate}</div>
                 <div><strong>${statusText}</strong></div>
                 <div class="project-actions">
                     <button class="btn-edit" onclick="openEditModal('${task.id}')" title="Editar">✏️</button>
@@ -172,12 +167,14 @@ function renderList(tasks) {
 }
 
 // ==========================================
-// 3. GESTIÓN DE PROYECTOS (Solo los del usuario)
+// 3. GESTIÓN DE PROYECTOS (Equipos)
 // ==========================================
 async function loadProjects() {
     try {
-        const response = await fetch(`${API_PROJECTS}?userId=${currentUser.id}`);
-        allProjects = await response.json();
+        const response = await fetch(API_PROJECTS);
+        const todosLosProyectos = await response.json();
+        
+        allProjects = todosLosProyectos.filter(proj => proj.userIds && proj.userIds.includes(currentUser.id));
         
         projectSelect.innerHTML = ''; 
         
@@ -221,8 +218,10 @@ function renderManageProjectsList() {
         const li = document.createElement('li');
         li.className = 'project-list-item';
         li.innerHTML = `
-            <span>${proj.name}</span>
+            <span>${proj.name} <small style="color: #6b778c;">👥 (${proj.userIds.length})</small></span>
             <div class="project-actions">
+                <button onclick="inviteToProject('${proj.id}')" title="Añadir miembro">➕</button>
+                <button onclick="removeFromProject('${proj.id}')" title="Expulsar miembro">➖</button>
                 <button onclick="editProject('${proj.id}', '${proj.name}')" title="Renombrar">✏️</button>
                 <button onclick="deleteProject('${proj.id}')" title="Borrar">🗑️</button>
             </div>
@@ -230,6 +229,96 @@ function renderManageProjectsList() {
         list.appendChild(li);
     });
 }
+
+// NUEVA FUNCIÓN: Eliminar a alguien del proyecto
+window.removeFromProject = async function(projectId) {
+    const usernameToRemove = prompt("Introduce el nombre de usuario que quieres expulsar:");
+    if (!usernameToRemove) return;
+    
+    try {
+        // 1. Buscamos al usuario por su nombre
+        const res = await fetch(API_USERS);
+        const allUsers = await res.json();
+        const userToRemove = allUsers.find(u => u.username === usernameToRemove.trim());
+        
+        if (!userToRemove) {
+            alert("No existe ningún usuario con ese nombre.");
+            return;
+        }
+
+        // Evitamos que te borres a ti misma por accidente
+        if (userToRemove.id === currentUser.id) {
+            alert("¡No puedes expulsarte a ti misma de tu propio proyecto!");
+            return;
+        }
+        
+        // 2. Traemos el proyecto actual
+        const projRes = await fetch(`${API_PROJECTS}/${projectId}`);
+        const project = await projRes.json();
+        
+        // 3. Comprobamos si realmente estaba en el equipo
+        if (!project.userIds.includes(userToRemove.id)) {
+            alert("Ese usuario no forma parte de este proyecto.");
+            return;
+        }
+        
+        // 4. Lo borramos de la lista usando .filter()
+        const nuevaLista = project.userIds.filter(id => id !== userToRemove.id);
+        
+        // 5. Guardamos los cambios
+        await fetch(`${API_PROJECTS}/${projectId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userIds: nuevaLista })
+        });
+        
+        alert(`¡Listo! El usuario ${userToRemove.username} ha sido eliminado del proyecto.`);
+        await loadProjects();
+        renderManageProjectsList();
+        
+    } catch (error) {
+        console.error("Error al expulsar:", error);
+    }
+};
+
+window.inviteToProject = async function(projectId) {
+    const usernameToInvite = prompt("Introduce el nombre de usuario de tu compañero:");
+    if (!usernameToInvite) return;
+    
+    try {
+        const res = await fetch(API_USERS);
+        const allUsers = await res.json();
+        const userToInvite = allUsers.find(u => u.username === usernameToInvite.trim());
+        
+        if (!userToInvite) {
+            alert("No existe ningún usuario con ese nombre.");
+            return;
+        }
+        
+        const projRes = await fetch(`${API_PROJECTS}/${projectId}`);
+        const project = await projRes.json();
+        
+        if (project.userIds.includes(userToInvite.id)) {
+            alert("Ese usuario ya está en este proyecto.");
+            return;
+        }
+        
+        project.userIds.push(userToInvite.id);
+        
+        await fetch(`${API_PROJECTS}/${projectId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userIds: project.userIds })
+        });
+        
+        alert(`¡Misión cumplida! ${userToInvite.username} ahora tiene acceso al proyecto.`);
+        await loadProjects();
+        renderManageProjectsList();
+        
+    } catch (error) {
+        console.error("Error al invitar:", error);
+    }
+};
 
 document.getElementById('form-add-project').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -240,7 +329,7 @@ document.getElementById('form-add-project').addEventListener('submit', async (ev
         await fetch(API_PROJECTS, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: newId, name: input.value, userId: currentUser.id })
+            body: JSON.stringify({ id: newId, name: input.value, userIds: [currentUser.id] })
         });
         input.value = '';
         await loadProjects(); 

@@ -491,3 +491,9 @@ body {
 .auth-switch a:hover {
   text-decoration: underline;
 }
+
+/* Tachar tareas finalizadas en la lista */
+.text-strikethrough {
+    text-decoration: line-through;
+    color: #a5adba !important;
+}
