@@ -179,3 +179,17 @@ body {
 .btn-edit:hover {
     transform: scale(1.2);
 }
+
+/* Botón de borrar en las tarjetas */
+.btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.2rem;
+    transition: transform 0.2s;
+}
+
+.btn-delete:hover {
+    transform: scale(1.2);
+}

@@ -27,7 +27,7 @@ async function getTasks() {
     }
 }
 
-// 2. FUNCIÓN PARA DIBUJAR LAS TARJETAS (Añadido botón de Editar ✏️)
+// 2. FUNCIÓN PARA DIBUJAR LAS TARJETAS (Con botones de Editar ✏️ y Borrar 🗑️)
 function renderTasks(tasks) {
     document.getElementById('todo-list').innerHTML = '';
     document.getElementById('doing-list').innerHTML = '';
@@ -45,7 +45,10 @@ function renderTasks(tasks) {
                 <div class="card-footer">
                     <span class="badge ${task.priority.toLowerCase()}">${task.priority}</span>
                     <span class="date">📅 ${task.dueDate}</span>
-                    <button class="btn-edit" onclick="openEditModal('${task.id}')" title="Editar tarea">✏️</button>
+                    <div>
+                        <button class="btn-edit" onclick="openEditModal('${task.id}')" title="Editar tarea">✏️</button>
+                        <button class="btn-delete" onclick="deleteTask('${task.id}')" title="Borrar tarea">🗑️</button>
+                    </div>
                 </div>
             </article>
         `;
@@ -147,27 +150,20 @@ document.getElementById('search-input').addEventListener('input', (event) => {
     initSortable(); 
 });
 
-// --- NUEVAS FUNCIONES DE EDICIÓN ---
-
 // 8. ABRIR VENTANA DE EDICIÓN Y RELLENAR DATOS
 const modalEdit = document.getElementById('modal-edit-task');
 document.getElementById('btn-cancel-edit').addEventListener('click', () => modalEdit.close());
 
 function openEditModal(taskId) {
-    // Buscamos la tarea exacta en nuestra memoria
     const task = allTasks.find(t => t.id === taskId);
     if (!task) return;
 
-    // Rellenamos el formulario con los datos antiguos
     document.getElementById('edit-task-id').value = task.id;
     document.getElementById('edit-task-title').value = task.title;
     document.getElementById('edit-task-desc').value = task.description;
     document.getElementById('edit-task-priority').value = task.priority;
-    
-    // Si tenía una fecha válida, la ponemos. Si decía "Sin fecha", lo dejamos en blanco
     document.getElementById('edit-task-date').value = task.dueDate !== 'Sin fecha' ? task.dueDate : '';
 
-    // Abrimos el modal
     modalEdit.showModal();
 }
 
@@ -194,11 +190,29 @@ formEdit.addEventListener('submit', async (event) => {
         });
         
         modalEdit.close();
-        getTasks(); // Recargamos para ver los cambios
+        getTasks(); 
     } catch (error) {
         console.error("Error al actualizar la tarea:", error);
     }
 });
 
-// 10. ¡ARRANCAMOS!
+// 10. --- BORRAR TAREA (DELETE) ---
+async function deleteTask(taskId) {
+    // Usamos una ventana de confirmación nativa del navegador
+    const confirmDelete = confirm("¿Estás seguro de que quieres borrar esta tarea definitivamente?");
+    
+    if (confirmDelete) {
+        try {
+            await fetch(`${API_URL}/${taskId}`, {
+                method: 'DELETE'
+            });
+            console.log(`Tarea ${taskId} eliminada.`);
+            getTasks(); // Recargamos las tareas para que desaparezca
+        } catch (error) {
+            console.error("Error al borrar la tarea:", error);
+        }
+    }
+}
+
+// 11. ¡ARRANCAMOS!
 getTasks();
