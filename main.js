@@ -1,11 +1,19 @@
 // Guardamos la dirección del servidor
 const API_URL = 'http://localhost:3000/tasks';
-let allTasks = []; // Memoria de tareas
+let allTasks = []; 
 
-// 1. FUNCIÓN PRINCIPAL
+// --- ESCUCHAR EL MENÚ DESPLEGABLE ---
+const projectSelect = document.getElementById('project-select');
+projectSelect.addEventListener('change', () => {
+    document.getElementById('search-input').value = ''; 
+    getTasks();
+});
+
+// 1. FUNCIÓN PRINCIPAL 
 async function getTasks() {
     try {
-        const response = await fetch(API_URL);
+        const currentProject = projectSelect.value;
+        const response = await fetch(`${API_URL}?projectId=${currentProject}`);
         allTasks = await response.json(); 
         
         const searchInput = document.getElementById('search-input');
@@ -20,14 +28,12 @@ async function getTasks() {
         } else {
             renderTasks(allTasks); 
         }
-        
-        initSortable(); 
     } catch (error) {
         console.error("Error al cargar las tareas:", error);
     }
 }
 
-// 2. FUNCIÓN PARA DIBUJAR LAS TARJETAS (Con botones de Editar ✏️ y Borrar 🗑️)
+// 2. FUNCIÓN PARA DIBUJAR LAS TARJETAS
 function renderTasks(tasks) {
     document.getElementById('todo-list').innerHTML = '';
     document.getElementById('doing-list').innerHTML = '';
@@ -70,7 +76,7 @@ function renderTasks(tasks) {
     document.getElementById('count-done').innerText = doneCount;
 }
 
-// 3. FUNCIÓN DEL DRAG & DROP
+// 3. FUNCIÓN DEL DRAG & DROP (Corregida)
 function initSortable() {
     const todoList = document.getElementById('todo-list');
     const doingList = document.getElementById('doing-list');
@@ -82,7 +88,9 @@ function initSortable() {
         onEnd: function (event) {
             const card = event.item; 
             const taskId = card.getAttribute('data-id'); 
+            // CORRECCIÓN: Le quitamos un .parentElement que sobraba
             const newStatus = event.to.parentElement.getAttribute('data-status');
+            
             updateTaskStatus(taskId, newStatus);
         }
     };
@@ -121,7 +129,8 @@ formCreate.addEventListener('submit', async (event) => {
         description: document.getElementById('task-desc').value,
         priority: document.getElementById('task-priority').value,
         status: 'todo',
-        dueDate: document.getElementById('task-date').value || 'Sin fecha'
+        dueDate: document.getElementById('task-date').value || 'Sin fecha',
+        projectId: projectSelect.value 
     };
 
     try {
@@ -139,7 +148,7 @@ formCreate.addEventListener('submit', async (event) => {
     }
 });
 
-// 7. BUSCADOR
+// 7. BUSCADOR (Sin solapamientos)
 document.getElementById('search-input').addEventListener('input', (event) => {
     const searchText = event.target.value.toLowerCase();
     const filteredTasks = allTasks.filter(task => 
@@ -147,10 +156,9 @@ document.getElementById('search-input').addEventListener('input', (event) => {
         task.description.toLowerCase().includes(searchText)
     );
     renderTasks(filteredTasks);
-    initSortable(); 
 });
 
-// 8. ABRIR VENTANA DE EDICIÓN Y RELLENAR DATOS
+// 8. EDICIÓN
 const modalEdit = document.getElementById('modal-edit-task');
 document.getElementById('btn-cancel-edit').addEventListener('click', () => modalEdit.close());
 
@@ -167,7 +175,6 @@ function openEditModal(taskId) {
     modalEdit.showModal();
 }
 
-// 9. GUARDAR LOS CAMBIOS EDITADOS (PATCH)
 const formEdit = document.getElementById('form-edit-task');
 formEdit.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -196,23 +203,19 @@ formEdit.addEventListener('submit', async (event) => {
     }
 });
 
-// 10. --- BORRAR TAREA (DELETE) ---
+// 9. BORRAR TAREA
 async function deleteTask(taskId) {
-    // Usamos una ventana de confirmación nativa del navegador
     const confirmDelete = confirm("¿Estás seguro de que quieres borrar esta tarea definitivamente?");
-    
     if (confirmDelete) {
         try {
-            await fetch(`${API_URL}/${taskId}`, {
-                method: 'DELETE'
-            });
-            console.log(`Tarea ${taskId} eliminada.`);
-            getTasks(); // Recargamos las tareas para que desaparezca
+            await fetch(`${API_URL}/${taskId}`, { method: 'DELETE' });
+            getTasks(); 
         } catch (error) {
-            console.error("Error al borrar la tarea:", error);
+            console.error("Error al borrar:", error);
         }
     }
 }
 
-// 11. ¡ARRANCAMOS!
+// 10. ARRANQUE (Activamos el arrastre UNA sola vez)
+initSortable(); 
 getTasks();
