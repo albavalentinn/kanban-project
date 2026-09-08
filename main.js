@@ -1,18 +1,13 @@
-// Guardamos la dirección del servidor en una constante
+// Guardamos la dirección del servidor
 const API_URL = 'http://localhost:3000/tasks';
+let allTasks = []; // Memoria de tareas
 
-// NUEVO: Variable para guardar todas las tareas en la memoria de tu Mac
-let allTasks = [];
-
-// 1. FUNCIÓN PRINCIPAL (El motor que arranca todo)
+// 1. FUNCIÓN PRINCIPAL
 async function getTasks() {
     try {
         const response = await fetch(API_URL);
-        allTasks = await response.json(); // Guardamos las tareas en la memoria
+        allTasks = await response.json(); 
         
-        console.log("¡Éxito! Tareas cargadas:", allTasks);
-        
-        // NUEVO: Comprobamos si hay texto en el buscador para no borrar la búsqueda al mover una tarjeta
         const searchInput = document.getElementById('search-input');
         const currentSearch = searchInput ? searchInput.value.toLowerCase() : '';
         
@@ -27,13 +22,12 @@ async function getTasks() {
         }
         
         initSortable(); 
-        
     } catch (error) {
         console.error("Error al cargar las tareas:", error);
     }
 }
 
-// 2. FUNCIÓN PARA DIBUJAR LAS TARJETAS Y CONTADORES
+// 2. FUNCIÓN PARA DIBUJAR LAS TARJETAS (Añadido botón de Editar ✏️)
 function renderTasks(tasks) {
     document.getElementById('todo-list').innerHTML = '';
     document.getElementById('doing-list').innerHTML = '';
@@ -51,6 +45,7 @@ function renderTasks(tasks) {
                 <div class="card-footer">
                     <span class="badge ${task.priority.toLowerCase()}">${task.priority}</span>
                     <span class="date">📅 ${task.dueDate}</span>
+                    <button class="btn-edit" onclick="openEditModal('${task.id}')" title="Editar tarea">✏️</button>
                 </div>
             </article>
         `;
@@ -85,7 +80,6 @@ function initSortable() {
             const card = event.item; 
             const taskId = card.getAttribute('data-id'); 
             const newStatus = event.to.parentElement.getAttribute('data-status');
-            
             updateTaskStatus(taskId, newStatus);
         }
     };
@@ -95,52 +89,36 @@ function initSortable() {
     new Sortable(doneList, sortableOptions);
 }
 
-// 4. FUNCIÓN PARA ACTUALIZAR EL ESTADO (PATCH)
+// 4. ACTUALIZAR ESTADO AL ARRASTRAR (PATCH)
 async function updateTaskStatus(id, newStatus) {
     try {
         await fetch(`${API_URL}/${id}`, {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: newStatus }) 
         });
-        
         getTasks(); 
     } catch (error) {
-        console.error("Error al guardar en el servidor:", error);
+        console.error("Error al mover la tarea:", error);
     }
 }
 
-// 5. --- LÓGICA DEL MODAL ---
+// 5. LÓGICA DEL MODAL DE CREAR
 const modalCreate = document.getElementById('modal-create-task');
-const btnOpenCreate = document.getElementById('btn-create-task');
-const btnCancelCreate = document.getElementById('btn-cancel-task');
+document.getElementById('btn-create-task').addEventListener('click', () => modalCreate.showModal());
+document.getElementById('btn-cancel-task').addEventListener('click', () => modalCreate.close());
 
-btnOpenCreate.addEventListener('click', () => {
-    modalCreate.showModal(); 
-});
-
-btnCancelCreate.addEventListener('click', () => {
-    modalCreate.close();
-});
-
-// 6. --- LÓGICA PARA CREAR UNA TAREA NUEVA (POST) ---
+// 6. CREAR TAREA NUEVA (POST)
 const formCreate = document.getElementById('form-create-task');
-
 formCreate.addEventListener('submit', async (event) => {
     event.preventDefault(); 
 
-    const titleValue = document.getElementById('task-title').value;
-    const descValue = document.getElementById('task-desc').value;
-    const priorityValue = document.getElementById('task-priority').value;
-
     const newTask = {
-        title: titleValue,
-        description: descValue,
-        priority: priorityValue,
+        title: document.getElementById('task-title').value,
+        description: document.getElementById('task-desc').value,
+        priority: document.getElementById('task-priority').value,
         status: 'todo',
-        dueDate: 'Sin fecha'
+        dueDate: document.getElementById('task-date').value || 'Sin fecha'
     };
 
     try {
@@ -153,29 +131,74 @@ formCreate.addEventListener('submit', async (event) => {
         formCreate.reset(); 
         modalCreate.close();
         getTasks(); 
-
     } catch (error) {
-        console.error("Error al guardar la nueva tarea:", error);
+        console.error("Error al guardar:", error);
     }
 });
 
-// 7. --- LÓGICA DEL BUSCADOR (Filtrado inteligente en JavaScript) ---
-const searchInput = document.getElementById('search-input');
-
-searchInput.addEventListener('input', (event) => {
-    // 1. Convertimos lo que escribes a minúsculas
+// 7. BUSCADOR
+document.getElementById('search-input').addEventListener('input', (event) => {
     const searchText = event.target.value.toLowerCase();
-    
-    // 2. Filtramos la memoria en lugar de pedirle datos al servidor
-    const filteredTasks = allTasks.filter(task => {
-        return task.title.toLowerCase().includes(searchText) || 
-               task.description.toLowerCase().includes(searchText);
-    });
-    
-    // 3. Dibujamos el resultado y reactivamos el Drag & Drop
+    const filteredTasks = allTasks.filter(task => 
+        task.title.toLowerCase().includes(searchText) || 
+        task.description.toLowerCase().includes(searchText)
+    );
     renderTasks(filteredTasks);
     initSortable(); 
 });
 
-// 8. ¡Damos la orden de arrancar!
+// --- NUEVAS FUNCIONES DE EDICIÓN ---
+
+// 8. ABRIR VENTANA DE EDICIÓN Y RELLENAR DATOS
+const modalEdit = document.getElementById('modal-edit-task');
+document.getElementById('btn-cancel-edit').addEventListener('click', () => modalEdit.close());
+
+function openEditModal(taskId) {
+    // Buscamos la tarea exacta en nuestra memoria
+    const task = allTasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    // Rellenamos el formulario con los datos antiguos
+    document.getElementById('edit-task-id').value = task.id;
+    document.getElementById('edit-task-title').value = task.title;
+    document.getElementById('edit-task-desc').value = task.description;
+    document.getElementById('edit-task-priority').value = task.priority;
+    
+    // Si tenía una fecha válida, la ponemos. Si decía "Sin fecha", lo dejamos en blanco
+    document.getElementById('edit-task-date').value = task.dueDate !== 'Sin fecha' ? task.dueDate : '';
+
+    // Abrimos el modal
+    modalEdit.showModal();
+}
+
+// 9. GUARDAR LOS CAMBIOS EDITADOS (PATCH)
+const formEdit = document.getElementById('form-edit-task');
+formEdit.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const id = document.getElementById('edit-task-id').value;
+    const dateValue = document.getElementById('edit-task-date').value;
+
+    const updatedData = {
+        title: document.getElementById('edit-task-title').value,
+        description: document.getElementById('edit-task-desc').value,
+        priority: document.getElementById('edit-task-priority').value,
+        dueDate: dateValue ? dateValue : 'Sin fecha'
+    };
+
+    try {
+        await fetch(`${API_URL}/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedData)
+        });
+        
+        modalEdit.close();
+        getTasks(); // Recargamos para ver los cambios
+    } catch (error) {
+        console.error("Error al actualizar la tarea:", error);
+    }
+});
+
+// 10. ¡ARRANCAMOS!
 getTasks();

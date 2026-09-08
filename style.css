@@ -165,3 +165,17 @@ body {
     border-radius: 4px;
     cursor: pointer;
 }
+
+/* Botón de editar en las tarjetas */
+.btn-edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.2rem;
+    transition: transform 0.2s;
+}
+
+.btn-edit:hover {
+    transform: scale(1.2);
+}
