@@ -14,15 +14,7 @@
   "projects": [
     {
       "id": "proyecto-1",
-      "name": "Ingeniería Core",
-      "userIds": [
-        "user-1",
-        "user-2"
-      ]
-    },
-    {
-      "id": "proyecto-2",
-      "name": "Diseño Web",
+      "name": "DISEÑO KANBAN",
       "userIds": [
         "user-1"
       ]
@@ -36,7 +28,7 @@
       "priority": "Alta",
       "dueDate": "2026-09-15",
       "status": "todo",
-      "projectId": "proyecto-2"
+      "projectId": null
     },
     {
       "id": "2",
@@ -46,6 +38,24 @@
       "dueDate": "2026-09-10",
       "status": "doing",
       "projectId": "proyecto-1"
+    },
+    {
+      "title": "Commit",
+      "description": "Haz de vez en cuando",
+      "priority": "Alta",
+      "status": "todo",
+      "dueDate": "2026-09-13",
+      "projectId": "proyecto-1",
+      "id": "md0OrNYbHms"
+    },
+    {
+      "title": "Diseño en Stich",
+      "description": "Hacer maqueta de propuesta",
+      "priority": "Media",
+      "status": "done",
+      "dueDate": "2026-09-11",
+      "projectId": "proyecto-1",
+      "id": "HPKi9VsU2YY"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
