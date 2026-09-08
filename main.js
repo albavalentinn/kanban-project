@@ -20,12 +20,17 @@ async function getTasks() {
     }
 }
 
-// 2. FUNCIÓN PARA DIBUJAR LAS TARJETAS (La que inyecta el HTML)
+// 2. FUNCIÓN PARA DIBUJAR LAS TARJETAS Y CONTADORES
 function renderTasks(tasks) {
     // Limpiamos las columnas primero
     document.getElementById('todo-list').innerHTML = '';
     document.getElementById('doing-list').innerHTML = '';
     document.getElementById('done-list').innerHTML = '';
+
+    // Preparamos los contadores a cero
+    let todoCount = 0;
+    let doingCount = 0;
+    let doneCount = 0;
 
     // Recorremos cada tarea y creamos su tarjeta
     tasks.forEach(task => {
@@ -40,15 +45,23 @@ function renderTasks(tasks) {
             </article>
         `;
 
-        // Metemos la tarjeta en la columna correspondiente
+        // Metemos la tarjeta en su columna y sumamos 1 a su contador
         if (task.status === 'todo') {
             document.getElementById('todo-list').innerHTML += cardHTML;
+            todoCount++;
         } else if (task.status === 'doing') {
             document.getElementById('doing-list').innerHTML += cardHTML;
+            doingCount++;
         } else if (task.status === 'done') {
             document.getElementById('done-list').innerHTML += cardHTML;
+            doneCount++;
         }
     });
+
+    // Inyectamos los totales en los números de la cabecera
+    document.getElementById('count-todo').innerText = todoCount;
+    document.getElementById('count-doing').innerText = doingCount;
+    document.getElementById('count-done').innerText = doneCount;
 }
 
 // 3. FUNCIÓN DEL DRAG & DROP (La que usa SortableJS)
@@ -82,7 +95,7 @@ function initSortable() {
 async function updateTaskStatus(id, newStatus) {
     try {
         await fetch(`${API_URL}/${id}`, {
-            method: 'PATCH', // Usamos PATCH porque solo actualizamos el status
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -90,60 +103,60 @@ async function updateTaskStatus(id, newStatus) {
         });
         
         console.log(`¡Base de datos actualizada! Tarea ${id} ahora es ${newStatus}`);
+        
+        // Refrescamos las tareas para que los contadores se actualicen al instante
+        getTasks(); 
+        
     } catch (error) {
         console.error("Error al guardar en el servidor:", error);
     }
 }
 
-// 5. --- LÓGICA DEL MODAL ---
+// 5. --- LÓGICA DEL MODAL (Abrir y cerrar) ---
 const modalCreate = document.getElementById('modal-create-task');
 const btnOpenCreate = document.getElementById('btn-create-task');
 const btnCancelCreate = document.getElementById('btn-cancel-task');
 
-// Cuando hacemos clic en "+ Nueva Tarea", abrimos el modal
 btnOpenCreate.addEventListener('click', () => {
     modalCreate.showModal(); 
 });
 
-// Cuando hacemos clic en "Cancelar", lo cerramos
 btnCancelCreate.addEventListener('click', () => {
     modalCreate.close();
 });
 
-// 6. LÓGICA PARA CREAR UNA TAREA NUEVA (POST)
+// 6. --- LÓGICA PARA CREAR UNA TAREA NUEVA (POST) ---
 const formCreate = document.getElementById('form-create-task');
 
 formCreate.addEventListener('submit', async (event) => {
-    // Esto es SUPER importante: evita que la página se recargue al darle a "Guardar"
-    event.preventDefault(); 
+    event.preventDefault(); // Evita que la página se recargue
 
-    // 1. Recogemos los valores que has escrito en las cajas de texto
+    // Recogemos los valores
     const titleValue = document.getElementById('task-title').value;
     const descValue = document.getElementById('task-desc').value;
     const priorityValue = document.getElementById('task-priority').value;
 
-    // 2. Preparamos el "paquete" con los datos para el servidor
+    // Preparamos el paquete
     const newTask = {
         title: titleValue,
         description: descValue,
         priority: priorityValue,
-        status: 'todo', // Por defecto, siempre entran en la primera columna
-        dueDate: 'Sin fecha' // Como no le pusimos input de fecha, ponemos esto por defecto
+        status: 'todo',
+        dueDate: 'Sin fecha'
     };
 
-    // 3. Enviamos el paquete a la base de datos (POST)
     try {
         await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(newTask) // Convertimos nuestro paquete a texto JSON
+            body: JSON.stringify(newTask)
         });
         
         console.log("¡Nueva tarea creada con éxito!");
         
-        // 4. Si todo ha ido bien: limpiamos el formulario, cerramos el modal y recargamos las tarjetas
+        // Limpiamos, cerramos el modal y recargamos
         formCreate.reset(); 
         modalCreate.close();
         getTasks(); 
@@ -152,6 +165,28 @@ formCreate.addEventListener('submit', async (event) => {
         console.error("Error al guardar la nueva tarea:", error);
     }
 });
+// 7. --- LÓGICA DEL BUSCADOR ---
+const searchInput = document.getElementById('search-input');
 
-// 6. ¡Damos la orden de arrancar!
+// Escuchamos cada vez que el usuario escribe algo (evento 'input')
+searchInput.addEventListener('input', async (event) => {
+    // Cogemos el texto que ha escrito
+    const searchText = event.target.value;
+
+    try {
+        // Hacemos una petición al servidor usando "?q=" para que busque por nosotros
+        const response = await fetch(`${API_URL}?q=${searchText}`);
+        const filteredTasks = await response.json();
+        
+        // Dibujamos solo las tareas que coinciden con la búsqueda
+        renderTasks(filteredTasks);
+        
+        // IMPORTANTE: Como hemos dibujado tarjetas nuevas, tenemos que volver a darles el poder de arrastrarse
+        initSortable(); 
+        
+    } catch (error) {
+        console.error("Error al buscar tareas:", error);
+    }
+});
+// 8. ¡Damos la orden de arrancar!
 getTasks();
