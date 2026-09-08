@@ -9,10 +9,8 @@
 </head>
 <body>
 
-    <!-- CONTENEDOR PRINCIPAL QUE DIVIDE LA PANTALLA EN 2 -->
     <div class="app-container">
-
-        <!-- 1. MENÚ LATERAL IZQUIERDO -->
+        <!-- 1. MENÚ LATERAL IZQUIERDO (Limpio) -->
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <h2>FlowKanban</h2>
@@ -20,27 +18,16 @@
             
             <div class="sidebar-section">
                 <span class="section-title">ESPACIOS DE TRABAJO</span>
-                <!-- Aquí está nuestro selector de proyectos -->
                 <select id="project-select" class="project-dropdown">
-                    <option value="proyecto-1">Ingeniería Core</option>
-                    <option value="proyecto-2">Diseño Web</option>
+                    <!-- Se llena con JS -->
                 </select>
-            </div>
-
-            <div class="sidebar-section">
-                <span class="section-title">VISTAS DEL PROYECTO</span>
-                <ul class="sidebar-nav">
-                    <li class="active">Tablero Kanban</li>
-                    <li>Lista de Tareas</li>
-                    <li>Calendario</li>
-                </ul>
+                <!-- Botón para abrir el administrador -->
+                <button id="btn-manage-projects" class="btn-text">⚙️ Administrar Proyectos</button>
             </div>
         </aside>
 
         <!-- 2. CONTENIDO PRINCIPAL DERECHO -->
         <div class="main-content">
-            
-            <!-- Cabecera Superior (Estadísticas y Buscador) -->
             <header class="top-header">
                 <div class="header-stats" id="stats-panel">
                     <span class="stat-badge">Por Hacer: <b id="count-todo">0</b></span>
@@ -52,43 +39,69 @@
                 </div>
             </header>
 
-            <!-- Barra de Herramientas (Botón Nueva Tarea) -->
             <div class="toolbar">
                 <div class="toolbar-tabs">
                     <button class="tab active">Tablero Kanban</button>
                     <button class="tab">Lista</button>
                 </div>
-                <!-- El botón de nueva tarea se va a la derecha -->
                 <button id="btn-create-task" class="btn-primary">+ Nueva Tarea</button>
             </div>
 
             <!-- TABLERO KANBAN -->
             <main class="kanban-board">
                 <section class="kanban-column" data-status="todo">
-                    <div class="column-header">
-                        <h2>Por Hacer</h2>
-                    </div>
+                    <div class="column-header"><h2>Por Hacer</h2></div>
                     <div class="task-list" id="todo-list"></div>
                 </section>
-
                 <section class="kanban-column" data-status="doing">
-                    <div class="column-header">
-                        <h2>En Proceso</h2>
-                    </div>
+                    <div class="column-header"><h2>En Proceso</h2></div>
                     <div class="task-list" id="doing-list"></div>
                 </section>
-
                 <section class="kanban-column" data-status="done">
-                    <div class="column-header">
-                        <h2>Finalizado</h2>
-                    </div>
+                    <div class="column-header"><h2>Finalizado</h2></div>
                     <div class="task-list" id="done-list"></div>
                 </section>
             </main>
+
+            <!-- NUEVA VISTA DE LISTA (Corregida con la clase hidden) -->
+            <section id="list-board" class="list-board hidden">
+                <div class="list-header">
+                    <span>Tarea</span>
+                    <span>Prioridad</span>
+                    <span>Fecha Límite</span>
+                    <span>Estado</span>
+                    <span>Acciones</span>
+                </div>
+                <div class="list-content" id="list-content">
+                    <!-- Las tareas en formato fila se inyectarán aquí con JS -->
+                </div>
+            </section>
+
         </div>
     </div>
 
-    <!-- MODALES (Se quedan igual) -->
+    <!-- MODAL ADMINISTRAR PROYECTOS -->
+    <dialog id="modal-manage-projects" class="modal">
+        <div class="modal-header">
+            <h3>Administrar Espacios</h3>
+            <button type="button" id="btn-close-manage-projects" class="btn-close">✖</button>
+        </div>
+        
+        <div class="manage-projects-container">
+            <!-- Formulario para añadir nuevo -->
+            <form id="form-add-project" class="add-project-form">
+                <input type="text" id="new-project-name" required placeholder="Nombre del nuevo proyecto...">
+                <button type="submit" class="btn-primary">Añadir</button>
+            </form>
+
+            <!-- Lista de proyectos existentes -->
+            <ul id="manage-projects-list" class="projects-list">
+                <!-- Se llena con JS -->
+            </ul>
+        </div>
+    </dialog>
+
+    <!-- MODAL PARA CREAR TAREA -->
     <dialog id="modal-create-task" class="modal">
         <form id="form-create-task">
             <h3>Crear Nueva Tarea</h3>
@@ -111,6 +124,7 @@
         </form>
     </dialog>
 
+    <!-- MODAL PARA EDITAR TAREA -->
     <dialog id="modal-edit-task" class="modal">
         <form id="form-edit-task">
             <h3>Editar Tarea</h3>

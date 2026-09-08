@@ -1,4 +1,14 @@
 {
+  "projects": [
+    {
+      "id": "proyecto-1",
+      "name": "CREACIÓN KANBAN"
+    },
+    {
+      "id": "_WuUYre6wmU",
+      "name": "ef3qef3"
+    }
+  ],
   "tasks": [
     {
       "id": "1",
@@ -6,60 +16,35 @@
       "description": "Crear los wireframes y prototipos interactivos del tablero.",
       "priority": "Alta",
       "dueDate": "2026-09-15",
-      "status": "doing",
-      "projectId": "proyecto-1"
+      "status": "todo",
+      "projectId": null
     },
     {
       "id": "2",
       "title": "Configurar json-server",
-      "description": "Iniciar la API simulada con las colecciones de tareas y comentarios.",
+      "description": "Iniciar la API simulada con las colecciones de tareas.",
       "priority": "Media",
       "dueDate": "2026-09-10",
-      "status": "doing",
-      "projectId": "proyecto-2"
+      "status": "done",
+      "projectId": "proyecto-1"
     },
     {
-      "title": "ewd",
-      "description": "ewdew",
-      "priority": "Media",
-      "status": "todo",
-      "dueDate": "2026-09-05",
-      "projectId": "proyecto-1",
-      "id": "cLbw4dbtkgE"
-    },
-    {
-      "title": "ewdew",
-      "description": "ewdwed",
+      "title": "erfqffff",
+      "description": "ewqfq",
       "priority": "Alta",
       "status": "todo",
-      "dueDate": "2026-09-04",
-      "projectId": "proyecto-1",
-      "id": "nimU9O5z_Yw"
+      "dueDate": "2026-09-11",
+      "projectId": "",
+      "id": "6EuEj7nTV74"
     },
     {
-      "title": "ewdfewf",
-      "description": "efwefe",
-      "priority": "Baja",
-      "status": "done",
+      "title": "Commits",
+      "description": "porfavoorrrrr",
+      "priority": "Alta",
+      "status": "todo",
       "dueDate": "2026-09-20",
       "projectId": "proyecto-1",
-      "id": "A36ANgU2SkU"
-    }
-  ],
-  "comments": [
-    {
-      "id": "101",
-      "taskId": "1",
-      "author": "Ana Gómez",
-      "text": "Recuerda incluir los estados de hover en los botones del modal.",
-      "createdAt": "2026-09-06T10:30:00Z"
-    },
-    {
-      "id": "102",
-      "taskId": "1",
-      "author": "Carlos Ruiz",
-      "text": "Ya subí la paleta de colores al canal de Figma.",
-      "createdAt": "2026-09-06T11:15:00Z"
+      "id": "3fySzfdNSfo"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
