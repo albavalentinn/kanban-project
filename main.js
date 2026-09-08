@@ -1,20 +1,131 @@
 const API_URL = 'http://localhost:3000/tasks';
 const API_PROJECTS = 'http://localhost:3000/projects';
+const API_USERS = 'http://localhost:3000/users';
 
 let allTasks = []; 
 let allProjects = []; 
+let currentUser = null; // Guardará el usuario activo
 
 const projectSelect = document.getElementById('project-select');
+const authContainer = document.getElementById('auth-container');
+const appContainer = document.getElementById('app-container');
 
 // ==========================================
-// 1. GESTIÓN DE VISTAS (TABLERO VS LISTA)
+// 1. SISTEMA DE AUTENTICACIÓN (LOGIN/REGISTRO)
+// ==========================================
+let isLoginMode = true;
+
+document.getElementById('auth-switch-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    isLoginMode = !isLoginMode;
+    
+    if (isLoginMode) {
+        document.getElementById('auth-title').innerText = 'Iniciar Sesión';
+        document.getElementById('btn-auth-submit').innerText = 'Entrar';
+        document.getElementById('auth-switch-text').innerText = '¿No tienes cuenta?';
+        e.target.innerText = 'Regístrate aquí';
+    } else {
+        document.getElementById('auth-title').innerText = 'Crear Cuenta';
+        document.getElementById('btn-auth-submit').innerText = 'Registrarse';
+        document.getElementById('auth-switch-text').innerText = '¿Ya tienes cuenta?';
+        e.target.innerText = 'Inicia sesión aquí';
+    }
+});
+
+document.getElementById('auth-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const userVal = document.getElementById('auth-username').value.trim();
+    const passVal = document.getElementById('auth-password').value.trim();
+
+    if (isLoginMode) {
+        // INICIAR SESIÓN
+        try {
+            const res = await fetch(`${API_USERS}?username=${userVal}&password=${passVal}`);
+            const users = await res.json();
+            if (users.length > 0) {
+                iniciarSesion(users[0]);
+            } else {
+                alert('Usuario o contraseña incorrectos. Inténtalo de nuevo.');
+            }
+        } catch (error) { console.error("Error al iniciar sesión", error); }
+    } else {
+        // REGISTRO
+        try {
+            const resCheck = await fetch(`${API_USERS}?username=${userVal}`);
+            const exists = await resCheck.json();
+            if (exists.length > 0) {
+                alert('Ese nombre de usuario ya está cogido. ¡Elige otro!');
+                return;
+            }
+            
+            const newUser = { id: 'user-' + Date.now(), username: userVal, password: passVal };
+            const res = await fetch(API_USERS, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newUser)
+            });
+            const createdUser = await res.json();
+            iniciarSesion(createdUser);
+        } catch (error) { console.error("Error al registrar", error); }
+    }
+});
+
+function iniciarSesion(user) {
+    currentUser = user;
+    localStorage.setItem('kanban_user', JSON.stringify(user));
+    
+    authContainer.classList.add('hidden');
+    appContainer.classList.remove('hidden');
+    
+    crearBotonCerrarSesion();
+    loadProjects(); // Carga solo los proyectos de este usuario
+}
+
+function crearBotonCerrarSesion() {
+    if (!document.getElementById('btn-logout')) {
+        const sidebar = document.querySelector('.sidebar');
+        const logoutBtn = document.createElement('button');
+        logoutBtn.id = 'btn-logout';
+        logoutBtn.className = 'btn-text';
+        logoutBtn.style.marginTop = 'auto'; // Lo empuja hacia abajo
+        logoutBtn.style.color = '#bf2600'; // Color rojo para destacar
+        logoutBtn.innerHTML = `🚪 Cerrar Sesión (${currentUser.username})`;
+        
+        logoutBtn.onclick = () => {
+            localStorage.removeItem('kanban_user');
+            currentUser = null;
+            appContainer.classList.add('hidden');
+            authContainer.classList.remove('hidden');
+            document.getElementById('auth-form').reset();
+            logoutBtn.remove();
+        };
+        sidebar.appendChild(logoutBtn);
+    }
+}
+
+function comprobarSesion() {
+    const sesionGuardada = localStorage.getItem('kanban_user');
+    if (sesionGuardada) {
+        currentUser = JSON.parse(sesionGuardada);
+        authContainer.classList.add('hidden');
+        appContainer.classList.remove('hidden');
+        crearBotonCerrarSesion();
+        loadProjects();
+    } else {
+        authContainer.classList.remove('hidden');
+        appContainer.classList.add('hidden');
+    }
+}
+
+
+// ==========================================
+// 2. GESTIÓN DE VISTAS (TABLERO VS LISTA)
 // ==========================================
 const btnKanban = document.querySelectorAll('.toolbar-tabs .tab')[0];
 const btnList = document.querySelectorAll('.toolbar-tabs .tab')[1];
 const boardKanban = document.querySelector('.kanban-board');
 const boardList = document.getElementById('list-board');
 
-// Cambiar a vista Kanban
 btnKanban.addEventListener('click', () => {
     btnKanban.classList.add('active');
     btnList.classList.remove('active');
@@ -22,7 +133,6 @@ btnKanban.addEventListener('click', () => {
     boardList.classList.add('hidden');
 });
 
-// Cambiar a vista Lista
 btnList.addEventListener('click', () => {
     btnList.classList.add('active');
     btnKanban.classList.remove('active');
@@ -30,11 +140,9 @@ btnList.addEventListener('click', () => {
     boardKanban.classList.add('hidden');
 });
 
-// Dibujar tareas en formato de fila
 function renderList(tasks) {
     const listContent = document.getElementById('list-content');
     listContent.innerHTML = '';
-
     tasks.forEach(task => {
         let statusText = '';
         if(task.status === 'todo') statusText = 'Por Hacer';
@@ -60,12 +168,12 @@ function renderList(tasks) {
 }
 
 // ==========================================
-// 2. GESTIÓN DE PROYECTOS
+// 3. GESTIÓN DE PROYECTOS (Solo los del usuario)
 // ==========================================
-
 async function loadProjects() {
     try {
-        const response = await fetch(API_PROJECTS);
+        // Pedimos al servidor solo los proyectos que tengan nuestro ID
+        const response = await fetch(`${API_PROJECTS}?userId=${currentUser.id}`);
         allProjects = await response.json();
         
         projectSelect.innerHTML = ''; 
@@ -85,9 +193,7 @@ async function loadProjects() {
         });
 
         getTasks(); 
-    } catch (error) {
-        console.error("Error al cargar proyectos:", error);
-    }
+    } catch (error) { console.error("Error al cargar proyectos:", error); }
 }
 
 projectSelect.addEventListener('change', () => {
@@ -101,7 +207,6 @@ document.getElementById('btn-manage-projects').addEventListener('click', () => {
     renderManageProjectsList();
     modalManageProjects.showModal();
 });
-
 document.getElementById('btn-close-manage-projects').addEventListener('click', () => {
     modalManageProjects.close();
 });
@@ -109,7 +214,6 @@ document.getElementById('btn-close-manage-projects').addEventListener('click', (
 function renderManageProjectsList() {
     const list = document.getElementById('manage-projects-list');
     list.innerHTML = '';
-
     allProjects.forEach(proj => {
         const li = document.createElement('li');
         li.className = 'project-list-item';
@@ -124,6 +228,7 @@ function renderManageProjectsList() {
     });
 }
 
+// Añadimos el ID del usuario al crear un proyecto
 document.getElementById('form-add-project').addEventListener('submit', async (event) => {
     event.preventDefault();
     const input = document.getElementById('new-project-name');
@@ -133,7 +238,7 @@ document.getElementById('form-add-project').addEventListener('submit', async (ev
         await fetch(API_PROJECTS, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: newId, name: input.value })
+            body: JSON.stringify({ id: newId, name: input.value, userId: currentUser.id })
         });
         input.value = '';
         await loadProjects(); 
@@ -144,7 +249,6 @@ document.getElementById('form-add-project').addEventListener('submit', async (ev
 window.editProject = async function(id, oldName) {
     const newName = prompt("Introduce el nuevo nombre del proyecto:", oldName);
     if (!newName || newName === oldName) return;
-
     try {
         await fetch(`${API_PROJECTS}/${id}`, {
             method: 'PATCH',
@@ -166,16 +270,13 @@ window.deleteProject = async function(id) {
 };
 
 // ==========================================
-// 3. GESTIÓN DE TAREAS (CRUD Y DRAG&DROP)
+// 4. GESTIÓN DE TAREAS
 // ==========================================
-
 async function getTasks() {
     try {
         const currentProject = projectSelect.value;
         if (!currentProject) {
-            renderTasks([]);
-            renderList([]);
-            return; 
+            renderTasks([]); renderList([]); return; 
         }
 
         const response = await fetch(`${API_URL}?projectId=${currentProject}`);
@@ -200,7 +301,6 @@ function renderTasks(tasks) {
     document.getElementById('todo-list').innerHTML = '';
     document.getElementById('doing-list').innerHTML = '';
     document.getElementById('done-list').innerHTML = '';
-
     let todoCount = 0; let doingCount = 0; let doneCount = 0;
 
     tasks.forEach(task => {
@@ -278,9 +378,7 @@ document.getElementById('form-create-task').addEventListener('submit', async (ev
     getTasks(); 
 });
 
-document.getElementById('search-input').addEventListener('input', () => {
-    getTasks();
-});
+document.getElementById('search-input').addEventListener('input', () => { getTasks(); });
 
 const modalEdit = document.getElementById('modal-edit-task');
 document.getElementById('btn-cancel-edit').addEventListener('click', () => modalEdit.close());
@@ -324,4 +422,4 @@ window.deleteTask = async function(taskId) {
 
 // ARRANQUE INICIAL
 initSortable(); 
-loadProjects();
+comprobarSesion(); // En vez de loadProjects(), primero comprobamos si alguien ya ha iniciado sesión

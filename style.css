@@ -423,7 +423,71 @@ body {
   max-width: 90%;
 }
 
-/* Clase maestra para ocultar elementos desde JavaScript */
 .hidden {
   display: none !important;
+}
+
+/* =========================================
+   7. SISTEMA DE USUARIOS (LOGIN / REGISTRO)
+   ========================================= */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f5f7;
+}
+.auth-card {
+  background: white;
+  padding: 3rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(9, 30, 66, 0.15);
+  width: 100%;
+  max-width: 350px;
+}
+.auth-card h2 {
+  margin-top: 0;
+  color: #172b4d;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ajustes específicos para que los inputs respiren */
+.auth-card form label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #5e6c84;
+  margin-bottom: 0.5rem;
+}
+.auth-card form input {
+  margin-bottom: 1.5rem; /* Más espacio entre campos */
+  padding: 0.8rem; /* Campos más altos y cómodos para hacer clic */
+  border: 2px solid #dfe1e6;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Evita que el padding rompa el ancho */
+  transition: border-color 0.2s;
+}
+.auth-card form input:focus {
+  border-color: #0052cc;
+  outline: none;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #5e6c84;
+}
+.auth-switch a {
+  color: #0052cc;
+  text-decoration: none;
+  font-weight: bold;
+}
+.auth-switch a:hover {
+  text-decoration: underline;
 }

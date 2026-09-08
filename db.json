@@ -1,12 +1,21 @@
 {
+  "users": [
+    {
+      "id": "user-1",
+      "username": "alba",
+      "password": "123"
+    }
+  ],
   "projects": [
     {
       "id": "proyecto-1",
-      "name": "CREACIÓN KANBAN"
+      "name": "Ingeniería Core",
+      "userId": "user-1"
     },
     {
-      "id": "_WuUYre6wmU",
-      "name": "ef3qef3"
+      "id": "proyecto-2",
+      "name": "Diseño Web",
+      "userId": "user-1"
     }
   ],
   "tasks": [
@@ -17,7 +26,7 @@
       "priority": "Alta",
       "dueDate": "2026-09-15",
       "status": "todo",
-      "projectId": null
+      "projectId": "proyecto-2"
     },
     {
       "id": "2",
@@ -25,27 +34,8 @@
       "description": "Iniciar la API simulada con las colecciones de tareas.",
       "priority": "Media",
       "dueDate": "2026-09-10",
-      "status": "done",
+      "status": "doing",
       "projectId": "proyecto-1"
-    },
-    {
-      "title": "erfqffff",
-      "description": "ewqfq",
-      "priority": "Alta",
-      "status": "todo",
-      "dueDate": "2026-09-11",
-      "projectId": "",
-      "id": "6EuEj7nTV74"
-    },
-    {
-      "title": "Commits",
-      "description": "porfavoorrrrr",
-      "priority": "Alta",
-      "status": "todo",
-      "dueDate": "2026-09-20",
-      "projectId": "proyecto-1",
-      "id": "3fySzfdNSfo"
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }

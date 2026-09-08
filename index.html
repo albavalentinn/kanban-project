@@ -9,8 +9,33 @@
 </head>
 <body>
 
-    <div class="app-container">
-        <!-- 1. MENÚ LATERAL IZQUIERDO (Limpio) -->
+    <!-- 0. PANTALLA DE LOGIN / REGISTRO -->
+    <div id="auth-container" class="auth-container">
+        <div class="auth-card">
+            <h1 class="logo" style="text-align: center; margin-bottom: 2rem; color: #0052cc;">FlowKanban</h1>
+            <h2 id="auth-title">Iniciar Sesión</h2>
+            
+            <form id="auth-form">
+                <label for="auth-username">Usuario:</label>
+                <input type="text" id="auth-username" required placeholder="Tu nombre de usuario">
+                
+                <label for="auth-password">Contraseña:</label>
+                <input type="password" id="auth-password" required placeholder="********">
+                
+                <button type="submit" class="btn-primary" id="btn-auth-submit" style="width: 100%; margin-top: 1rem;">Entrar</button>
+            </form>
+            
+            <p class="auth-switch">
+                <span id="auth-switch-text">¿No tienes cuenta?</span> 
+                <a href="#" id="auth-switch-link">Regístrate aquí</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- EL CONTENEDOR PRINCIPAL AHORA EMPIEZA OCULTO -->
+    <div class="app-container hidden" id="app-container">
+        
+        <!-- 1. MENÚ LATERAL IZQUIERDO -->
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <h2>FlowKanban</h2>
@@ -21,7 +46,6 @@
                 <select id="project-select" class="project-dropdown">
                     <!-- Se llena con JS -->
                 </select>
-                <!-- Botón para abrir el administrador -->
                 <button id="btn-manage-projects" class="btn-text">⚙️ Administrar Proyectos</button>
             </div>
         </aside>
@@ -63,7 +87,7 @@
                 </section>
             </main>
 
-            <!-- NUEVA VISTA DE LISTA (Corregida con la clase hidden) -->
+            <!-- VISTA DE LISTA -->
             <section id="list-board" class="list-board hidden">
                 <div class="list-header">
                     <span>Tarea</span>
@@ -88,16 +112,11 @@
         </div>
         
         <div class="manage-projects-container">
-            <!-- Formulario para añadir nuevo -->
             <form id="form-add-project" class="add-project-form">
                 <input type="text" id="new-project-name" required placeholder="Nombre del nuevo proyecto...">
                 <button type="submit" class="btn-primary">Añadir</button>
             </form>
-
-            <!-- Lista de proyectos existentes -->
-            <ul id="manage-projects-list" class="projects-list">
-                <!-- Se llena con JS -->
-            </ul>
+            <ul id="manage-projects-list" class="projects-list"></ul>
         </div>
     </dialog>
 
