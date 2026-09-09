@@ -462,30 +462,11 @@ const commentsList = document.getElementById('comments-list');
 const formAddComment = document.getElementById('form-add-comment');
 let currentViewTaskId = null; 
 
-/* ----- CÓDIGO ANTIGUO COMENTADO -----
-// El problema aquí era el 'async' y hacer 'await loadComments()'. Esto hacía una nueva llamada
-// al servidor, lo que causaba conflictos con la caché y devolvía 0 comentarios a veces.
-window.openTaskViewModal = async function(taskId) {
-    const task = allTasks.find(t => t.id === taskId);
-    if (!task) return;
-    currentViewTaskId = task.id;
-
-    document.getElementById('edit-task-id').value = task.id;
-    document.getElementById('edit-task-title').value = task.title;
-    document.getElementById('edit-task-desc').value = task.description;
-    document.getElementById('edit-task-priority').value = task.priority;
-    document.getElementById('edit-task-date').value = task.dueDate !== 'Sin fecha' ? task.dueDate : '';
-
-    modalTaskView.showModal();
-    await loadComments(task.id);
-};
-------------------------------------- */
-
-// ----- CÓDIGO NUEVO -----
-// Usamos directamente la información que ya trae la variable `allTasks` desde la carga inicial.
 window.openTaskViewModal = function(taskId) {
     const task = allTasks.find(t => t.id === taskId);
     if (!task) return;
+    
+    // Aseguramos que se actualice siempre el ID de la tarea activa al abrir el modal
     currentViewTaskId = task.id;
 
     document.getElementById('edit-task-id').value = task.id;
@@ -495,7 +476,6 @@ window.openTaskViewModal = function(taskId) {
     document.getElementById('edit-task-date').value = task.dueDate !== 'Sin fecha' ? task.dueDate : '';
 
     modalTaskView.showModal();
-    // Le pasamos el array de comentarios directamente
     renderCommentsList(task.comments || [], task.id);
 };
 
@@ -525,47 +505,6 @@ document.getElementById('btn-delete-task').addEventListener('click', async () =>
     }
 });
 
-/* ----- CÓDIGO ANTIGUO COMENTADO -----
-// Esta función era el origen del bug visual. Hacía un nuevo fetch a la API pidiendo los 
-// comentarios, pero JSON Server y el navegador a veces cacheaban la respuesta vacía.
-async function loadComments(taskId) {
-    try {
-        const response = await fetch(`${API_COMMENTS}?taskId=${taskId}`);
-        const comments = await response.json();
-        
-        commentsList.innerHTML = ''; 
-
-        if (comments.length === 0) {
-            commentsList.innerHTML = '<li style="color: #64748b; font-size: 0.9rem;">No hay comentarios todavía.</li>';
-            return;
-        }
-
-        comments.forEach(comment => {
-            const li = document.createElement('li');
-            li.style.cssText = 'background: #f1f5f9; padding: 0.8rem; border-radius: 6px; margin-bottom: 0.5rem; font-size: 0.9rem;';
-            const date = new Date(comment.createdAt).toLocaleDateString();
-            
-            let deleteBtnHTML = '';
-            if (comment.author === currentUser.username) {
-                deleteBtnHTML = `<button onclick="deleteComment('${comment.id}', '${taskId}')" style="background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; text-decoration: underline; padding: 0; margin-top: 0.4rem; font-weight: 500;">Eliminar</button>`;
-            }
-            
-            li.innerHTML = `
-                <strong style="color: #0369a1;">${comment.author}</strong> 
-                <span style="color: #64748b; font-size: 0.8rem;">(${date})</span>
-                <p style="margin: 0.3rem 0 0 0; color: #334155;">${comment.text}</p>
-                ${deleteBtnHTML}
-            `;
-            commentsList.appendChild(li);
-        });
-    } catch (error) {
-        console.error("Error al cargar comentarios:", error);
-    }
-}
-------------------------------------- */
-
-// ----- CÓDIGO NUEVO -----
-// Solo se dedica a "dibujar" el HTML. Recibe la lista de comentarios por parámetro, es mucho más rápido.
 function renderCommentsList(comments, taskId) {
     commentsList.innerHTML = ''; 
 
@@ -594,27 +533,11 @@ function renderCommentsList(comments, taskId) {
     });
 }
 
-/* ----- CÓDIGO ANTIGUO COMENTADO -----
 window.deleteComment = async function(commentId, taskId) {
     if (confirm("¿Eliminar este comentario?")) {
         try {
             await fetch(`${API_COMMENTS}/${commentId}`, { method: 'DELETE' });
             await getTasks(); 
-            await loadComments(taskId); // <- Aquí volvía a hacer fetch problemático
-        } catch (error) {
-            console.error("Error al borrar comentario:", error);
-        }
-    }
-};
-------------------------------------- */
-
-// ----- CÓDIGO NUEVO -----
-window.deleteComment = async function(commentId, taskId) {
-    if (confirm("¿Eliminar este comentario?")) {
-        try {
-            await fetch(`${API_COMMENTS}/${commentId}`, { method: 'DELETE' });
-            await getTasks(); // Esto actualiza 'allTasks' con los datos frescos del servidor
-            // Buscamos la tarea actualizada y la repintamos en pantalla
             const updatedTask = allTasks.find(t => t.id === taskId);
             renderCommentsList(updatedTask.comments || [], taskId); 
         } catch (error) {
@@ -623,7 +546,6 @@ window.deleteComment = async function(commentId, taskId) {
     }
 };
 
-/* ----- CÓDIGO ANTIGUO  -----
 formAddComment.addEventListener('submit', async (e) => {
     e.preventDefault();
     const textInput = document.getElementById('new-comment-text');
@@ -645,36 +567,6 @@ formAddComment.addEventListener('submit', async (e) => {
 
         textInput.value = ''; 
         await getTasks(); 
-        await loadComments(currentViewTaskId); // <- El mismo problema al añadir
-    } catch (error) {
-        console.error("Error al guardar comentario:", error);
-    }
-});
-------------------------------------- */
-
-// ----- CÓDIGO NUEVO -----
-formAddComment.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const textInput = document.getElementById('new-comment-text');
-    
-    const newComment = {
-        id: 'comment-' + Date.now(), 
-        taskId: currentViewTaskId,
-        author: currentUser.username, 
-        text: textInput.value,
-        createdAt: new Date().toISOString()
-    };
-
-    try {
-        await fetch(API_COMMENTS, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newComment)
-        });
-
-        textInput.value = ''; 
-        await getTasks(); // Refresca allTasks general
-        // Repintamos usando la nueva función
         const updatedTask = allTasks.find(t => t.id === currentViewTaskId);
         renderCommentsList(updatedTask.comments || [], currentViewTaskId); 
     } catch (error) {
