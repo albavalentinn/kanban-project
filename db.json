@@ -171,6 +171,24 @@
       "dueDate": "2026-09-11",
       "projectId": null,
       "id": "gSwic8w49RA"
+    },
+    {
+      "title": "Bocetos de logo",
+      "description": "Añadir ideas en los comentarios de esta tarea",
+      "priority": "Alta",
+      "status": "doing",
+      "dueDate": "2026-09-10",
+      "projectId": "ziSpt3NIefA",
+      "id": "sjDWUgcColg"
+    },
+    {
+      "title": "Reunión con cliente",
+      "description": "Se comentará la lluvia de ideas sobre el logotipo",
+      "priority": "Media",
+      "status": "todo",
+      "dueDate": "2026-09-11",
+      "projectId": "ziSpt3NIefA",
+      "id": "ukfMTZBd76o"
     }
   ],
   "comments": [
