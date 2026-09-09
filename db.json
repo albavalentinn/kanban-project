@@ -131,15 +131,6 @@
     },
     {
       "title": "PRUEBA",
-      "description": "1",
-      "priority": "Alta",
-      "status": "todo",
-      "dueDate": "2026-09-30",
-      "projectId": "proyecto-1",
-      "id": "95whiONgxj8"
-    },
-    {
-      "title": "PRUEBA",
       "description": "2",
       "priority": "Alta",
       "status": "done",
