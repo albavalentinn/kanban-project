@@ -18,13 +18,6 @@
       "userIds": [
         "user-1"
       ]
-    },
-    {
-      "id": "Xzvavvt6IDc",
-      "name": "Diseño Logotipo",
-      "userIds": [
-        "user-1"
-      ]
     }
   ],
   "tasks": [
@@ -48,7 +41,7 @@
     },
     {
       "title": "Commit",
-      "description": "Hacer de vez en cuando",
+      "description": "Hacer de vez en cuando.",
       "priority": "Baja",
       "status": "todo",
       "dueDate": "2026-09-13",

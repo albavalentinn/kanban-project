@@ -144,12 +144,19 @@ function renderList(tasks) {
         if(task.status === 'done') statusText = 'Finalizado';
 
         const isDone = task.status === 'done' ? 'text-strikethrough' : '';
+        
+        // Creamos la insignia de comentarios si los tiene
+        const commentsBadge = (task.comments && task.comments.length > 0)
+            ? `<span title="${task.comments.length} comentarios" style="display:inline-flex; align-items:center; gap:4px; font-size:0.75rem; background:#e2e8f0; padding:2px 8px; border-radius:12px; color:#475569; margin-left: 8px; font-weight: bold;">💬 ${task.comments.length}</span>`
+            : '';
 
-        // Título interactivo, cero botones
         listContent.innerHTML += `
             <div class="list-row" data-id="${task.id}">
                 <div class="list-row-title">
-                    <h4 class="${isDone}" style="cursor: pointer; color: #0369a1; text-decoration: underline; margin: 0;" onclick="openTaskViewModal('${task.id}')" title="Hacer clic para editar y ver comentarios">${task.title}</h4>
+                    <div style="display: flex; align-items: center;">
+                        <h4 class="${isDone}" style="cursor: pointer; color: #0369a1; text-decoration: underline; margin: 0;" onclick="openTaskViewModal('${task.id}')" title="Hacer clic para editar y ver comentarios">${task.title}</h4>
+                        ${commentsBadge}
+                    </div>
                     <p class="${isDone}">${task.description}</p>
                 </div>
                 <div><span class="badge ${task.priority.toLowerCase()}">${task.priority}</span></div>
@@ -311,7 +318,8 @@ async function getTasks() {
         const currentProject = projectSelect.value;
         if (!currentProject) { renderTasks([]); renderList([]); return; }
 
-        const response = await fetch(`${API_URL}?projectId=${currentProject}`);
+        // TRUCO MAGNÍFICO: _embed=comments hace que json-server nos devuelva cada tarea con un array de sus comentarios dentro.
+        const response = await fetch(`${API_URL}?projectId=${currentProject}&_embed=comments`);
         allTasks = await response.json(); 
         
         const searchInput = document.getElementById('search-input');
@@ -342,10 +350,18 @@ function renderTasks(tasks) {
     let todoCount = 0; let doingCount = 0; let doneCount = 0;
 
     tasks.forEach(task => {
-        // Tarjeta ultra limpia. Todo el poder está en el clic del título.
+        
+        // Creamos la insignia de comentarios si los tiene
+        const commentsBadge = (task.comments && task.comments.length > 0)
+            ? `<span title="${task.comments.length} comentarios" style="display:inline-flex; align-items:center; gap:4px; font-size:0.75rem; background:#e2e8f0; padding:2px 8px; border-radius:12px; color:#475569;">💬 ${task.comments.length}</span>`
+            : '';
+
         const cardHTML = `
             <article class="task-card" data-id="${task.id}">
-                <h3 style="cursor: pointer; color: #0369a1; margin-bottom: 0.5rem; text-decoration: underline;" onclick="openTaskViewModal('${task.id}')" title="Clic para editar y ver comentarios">${task.title}</h3>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 8px;">
+                    <h3 style="cursor: pointer; color: #0369a1; margin: 0; text-decoration: underline;" onclick="openTaskViewModal('${task.id}')" title="Clic para editar y ver comentarios">${task.title}</h3>
+                    ${commentsBadge}
+                </div>
                 <p>${task.description}</p>
                 <div class="card-footer" style="margin-top: 1rem;">
                     <span class="badge ${task.priority.toLowerCase()}">${task.priority}</span>
@@ -441,7 +457,6 @@ window.openTaskViewModal = async function(taskId) {
     if (!task) return;
     currentViewTaskId = task.id;
 
-    // Rellenamos directamente los inputs para poder editar rápido
     document.getElementById('edit-task-id').value = task.id;
     document.getElementById('edit-task-title').value = task.title;
     document.getElementById('edit-task-desc').value = task.description;
@@ -530,6 +545,9 @@ formAddComment.addEventListener('submit', async (e) => {
         });
 
         textInput.value = ''; 
+        // ¡Importante! Al enviar un comentario, volvemos a cargar las tareas del fondo
+        // para que se actualice la pequeña burbuja visual en el tablero
+        await getTasks(); 
         await loadComments(currentViewTaskId); 
     } catch (error) {
         console.error("Error al guardar comentario:", error);

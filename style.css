@@ -23,8 +23,8 @@ body {
 /* --- Menú Lateral Izquierdo --- */
 .sidebar {
   width: 260px;
-  background-color: #ffffff;
-  border-right: 1px solid #e1e4e8;
+  background-color: #ffffff; 
+  border-right: 1px solid #e1e4e8; 
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -32,17 +32,21 @@ body {
 }
 .sidebar-logo h2 {
   margin: 0;
-  color: #0052cc;
+  color: #0052cc; 
   font-size: 1.5rem;
 }
+
+/* Títulos de sección (como ESPACIOS DE TRABAJO) */
 .section-title {
-  font-size: 0.75rem;
-  color: #6b778c;
+  font-size: 0.85rem;
+  color: #6b778c; 
   font-weight: bold;
   margin-bottom: 0.8rem;
   display: block;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
+
 .project-dropdown {
   width: 100%;
   padding: 0.6rem;
@@ -51,6 +55,7 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   color: #172b4d;
+  background-color: #ffffff;
   cursor: pointer;
 }
 .sidebar-nav {
@@ -75,22 +80,33 @@ body {
   font-weight: bold;
 }
 
-/* Botón Administrar Proyectos */
+/* Botones de acción laterales (Administrar y Cerrar Sesión) */
 .btn-text {
   background: none;
   border: none;
-  color: #5e6c84;
+  color: #6b778c; 
   font-size: 0.85rem;
+  font-weight: bold; /* Igual que el título de sección */
+  letter-spacing: 0.5px; /* Mismo espaciado */
+  text-transform: uppercase; /* Todo en mayúsculas */
   cursor: pointer;
-  margin-top: 0.8rem;
+  margin-top: 1rem;
   padding: 0;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  transition: color 0.2s;
 }
 .btn-text:hover {
-  color: #172b4d;
-  text-decoration: underline;
+  color: #172b4d; 
+}
+
+/* Regla del botón logout (Mantiene su rojo corporativo) */
+#btn-logout {
+  color: #bf2600 !important; 
+}
+#btn-logout:hover {
+  color: #9e2000 !important;
 }
 
 /* --- Contenido Principal Derecho --- */
@@ -101,31 +117,37 @@ body {
   overflow-y: auto;
   background-color: #ffffff;
 }
+
+/* --- CABECERA AZUL CORPORATIVA --- */
 .top-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  border-bottom: 1px solid #e1e4e8;
+  background-color: #0052cc; 
+  border-bottom: none; 
 }
 .header-stats {
   display: flex;
   gap: 1.5rem;
 }
 .stat-badge {
-  color: #5e6c84;
+  color: #f3f5f7; 
   font-size: 0.95rem;
 }
 .stat-badge b {
-  color: #172b4d;
+  color: #ffffff; 
 }
 .header-search input {
   padding: 0.5rem 1rem;
-  border: 1px solid #dfe1e6;
+  border: none; 
   border-radius: 20px;
   width: 250px;
-  background-color: #fafbfc;
+  background-color: #ffffff;
+  color: #172b4d;
 }
+/* --------------------------------------- */
+
 .toolbar {
   display: flex;
   justify-content: space-between;
@@ -254,19 +276,6 @@ body {
 .btn-secondary:hover {
   background-color: #ebecf0;
   border-radius: 6px;
-}
-.btn-edit,
-.btn-delete {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-  padding: 0.2rem;
-  transition: transform 0.2s;
-}
-.btn-edit:hover,
-.btn-delete:hover {
-  transform: scale(1.2);
 }
 
 .modal {
@@ -456,7 +465,6 @@ body {
   flex-direction: column;
 }
 
-/* Ajustes específicos para que los inputs respiren */
 .auth-card form label {
   font-size: 0.9rem;
   font-weight: bold;
@@ -464,12 +472,12 @@ body {
   margin-bottom: 0.5rem;
 }
 .auth-card form input {
-  margin-bottom: 1.5rem; /* Más espacio entre campos */
-  padding: 0.8rem; /* Campos más altos y cómodos para hacer clic */
+  margin-bottom: 1.5rem; 
+  padding: 0.8rem; 
   border: 2px solid #dfe1e6;
   border-radius: 4px;
   font-size: 1rem;
-  box-sizing: border-box; /* Evita que el padding rompa el ancho */
+  box-sizing: border-box; 
   transition: border-color 0.2s;
 }
 .auth-card form input:focus {
@@ -492,14 +500,13 @@ body {
   text-decoration: underline;
 }
 
-/* Tachar tareas finalizadas en la lista */
 .text-strikethrough {
     text-decoration: line-through;
     color: #a5adba !important;
 }
 
 /* =========================================
-   10. FILTROS DE LISTA
+   8. FILTROS DE LISTA
    ========================================= */
 .list-filters {
     display: flex;
@@ -539,16 +546,13 @@ body {
    9. ADAPTACIÓN A MÓVILES (RESPONSIVE DESIGN)
    ========================================= */
 @media (max-width: 768px) {
-    /* 1. Layout general */
     .app-container { flex-direction: column; }
 
-    /* 2. Menú lateral mucho más compacto */
     .sidebar {
         width: 100%;
         padding: 1rem;
         gap: 0.8rem;
-        border-right: none;
-        border-bottom: 1px solid #e1e4e8;
+        border-bottom: 1px solid #e1e4e8; 
         box-sizing: border-box;
     }
     .sidebar-logo h2 { 
@@ -563,7 +567,6 @@ body {
     }
     .btn-text { margin-top: 0; }
 
-    /* 3. Cabecera */
     .top-header {
         padding: 1rem;
         flex-direction: column;
@@ -580,7 +583,6 @@ body {
     .header-search { width: 100%; }
     .header-search input { width: 100%; box-sizing: border-box; }
 
-    /* 4. Barra de Herramientas */
     .toolbar {
         padding: 1rem;
         flex-direction: row;
@@ -589,7 +591,6 @@ body {
         box-sizing: border-box;
     }
 
-    /* 5. Tablero Kanban: Ajuste de márgenes y botones */
     .kanban-board {
         padding: 1rem; 
         flex-direction: column; 
@@ -601,21 +602,20 @@ body {
     .kanban-column {
         width: 100%; 
         min-width: auto;
-        padding: 1rem; /* Empuja las tarjetas hacia adentro */
-        box-sizing: border-box; /* Evita que la columna se salga de la pantalla */
+        padding: 1rem;
+        box-sizing: border-box;
     }
 
     .task-card {
         width: 100%;
-        box-sizing: border-box; /* Evita que la tarjeta se salga de la columna gris */
+        box-sizing: border-box;
     }
 
     .card-footer {
-        flex-wrap: wrap; /* Si la pantalla es muy muy estrecha, la fecha no chocará con los botones */
+        flex-wrap: wrap; 
         gap: 0.8rem;
     }
 
-    /* 6. Vista de lista */
     .list-header { display: none; }
     .list-row { 
         grid-template-columns: 1fr; 
@@ -623,7 +623,6 @@ body {
     }
     .list-row-title p { white-space: normal; }
 
-    /* 7. Modales ajustados */
     .modal {
         width: 90%;
         padding: 1.5rem;
