@@ -14,7 +14,14 @@
   "projects": [
     {
       "id": "proyecto-1",
-      "name": "Diseño Kanban 1",
+      "name": "Diseño Kanban",
+      "userIds": [
+        "user-1"
+      ]
+    },
+    {
+      "id": "ziSpt3NIefA",
+      "name": "Identidad Marca BJ",
       "userIds": [
         "user-1"
       ]
@@ -155,6 +162,15 @@
       "dueDate": "2026-09-16",
       "projectId": null,
       "id": "kibVxwszmkw"
+    },
+    {
+      "title": "PRUEBA",
+      "description": "1",
+      "priority": "Alta",
+      "status": "todo",
+      "dueDate": "2026-09-11",
+      "projectId": null,
+      "id": "gSwic8w49RA"
     }
   ],
   "comments": [
@@ -199,6 +215,13 @@
       "author": "alba",
       "text": "erferw",
       "createdAt": "2026-09-09T11:08:07.778Z"
+    },
+    {
+      "id": "Q59GB9X4XMc",
+      "taskId": "gSwic8w49RA",
+      "author": "alba",
+      "text": "Pruebas",
+      "createdAt": "2026-09-09T11:18:46.398Z"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
