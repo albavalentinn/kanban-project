@@ -194,7 +194,6 @@ async function loadProjects() {
                 li.classList.add('active');
             }
 
-            // Nombre del proyecto (hace de botón invisible)
             const nameSpan = document.createElement('span');
             nameSpan.textContent = proj.name;
             nameSpan.style.flex = '1';
@@ -202,7 +201,6 @@ async function loadProjects() {
             nameSpan.style.textOverflow = 'ellipsis';
             nameSpan.style.whiteSpace = 'nowrap';
             
-            // Evento para seleccionar el proyecto
             li.addEventListener('click', () => {
                 document.querySelectorAll('#project-list li').forEach(el => el.classList.remove('active'));
                 li.classList.add('active');
@@ -217,7 +215,6 @@ async function loadProjects() {
                 getTasks();
             });
 
-            // Contenedor de las herramientas de edición
             const actionsDiv = document.createElement('div');
             actionsDiv.style.display = 'flex';
             actionsDiv.style.gap = '8px';
@@ -229,7 +226,7 @@ async function loadProjects() {
             btnEdit.onmouseover = () => btnEdit.style.opacity = '1';
             btnEdit.onmouseout = () => btnEdit.style.opacity = '0.6';
             btnEdit.onclick = (e) => {
-                e.stopPropagation(); // Evitamos que al clicar el lápiz, se seleccione el proyecto de fondo
+                e.stopPropagation(); 
                 editProject(proj.id, proj.name);
             };
 
@@ -240,7 +237,7 @@ async function loadProjects() {
             btnDelete.onmouseover = () => btnDelete.style.opacity = '1';
             btnDelete.onmouseout = () => btnDelete.style.opacity = '0.6';
             btnDelete.onclick = (e) => {
-                e.stopPropagation(); // Evitamos conflicto de clics
+                e.stopPropagation(); 
                 deleteProject(proj.id);
             };
 
@@ -261,7 +258,6 @@ async function loadProjects() {
     } catch (error) { console.error("Error", error); }
 }
 
-// Botón de Crear Nuevo Proyecto
 document.getElementById('btn-add-project').addEventListener('click', async () => {
     const newName = prompt("Introduce el nombre del nuevo proyecto:");
     if (!newName || newName.trim() === "") return;
@@ -403,7 +399,7 @@ document.getElementById('form-create-task').addEventListener('submit', async (ev
         priority: document.getElementById('task-priority').value,
         status: 'todo',
         dueDate: document.getElementById('task-date').value || 'Sin fecha',
-        projectId: currentProjectId, // Usamos la variable global
+        projectId: currentProjectId, 
         id: Date.now().toString() 
     };
     await fetch(API_URL, {
@@ -416,7 +412,6 @@ document.getElementById('form-create-task').addEventListener('submit', async (ev
 });
 
 document.getElementById('search-input').addEventListener('input', () => getTasks());
-
 
 // ==========================================
 // 5. EVENTOS FILTROS DE PRIORIDAD
@@ -497,10 +492,17 @@ async function loadComments(taskId) {
             li.style.cssText = 'background: #f1f5f9; padding: 0.8rem; border-radius: 6px; margin-bottom: 0.5rem; font-size: 0.9rem;';
             const date = new Date(comment.createdAt).toLocaleDateString();
             
+            // Lógica para mostrar botón Eliminar solo si eres el autor
+            let deleteBtnHTML = '';
+            if (comment.author === currentUser.username) {
+                deleteBtnHTML = `<button onclick="deleteComment('${comment.id}', '${taskId}')" style="background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; text-decoration: underline; padding: 0; margin-top: 0.4rem; font-weight: 500;">Eliminar</button>`;
+            }
+            
             li.innerHTML = `
                 <strong style="color: #0369a1;">${comment.author}</strong> 
                 <span style="color: #64748b; font-size: 0.8rem;">(${date})</span>
                 <p style="margin: 0.3rem 0 0 0; color: #334155;">${comment.text}</p>
+                ${deleteBtnHTML}
             `;
             commentsList.appendChild(li);
         });
@@ -509,11 +511,25 @@ async function loadComments(taskId) {
     }
 }
 
+// Nueva función para borrar comentarios
+window.deleteComment = async function(commentId, taskId) {
+    if (confirm("¿Eliminar este comentario?")) {
+        try {
+            await fetch(`${API_COMMENTS}/${commentId}`, { method: 'DELETE' });
+            await getTasks(); // Refresca las tarjetas (el contador de burbuja)
+            await loadComments(taskId); // Refresca la lista de comentarios en el modal
+        } catch (error) {
+            console.error("Error al borrar comentario:", error);
+        }
+    }
+};
+
 formAddComment.addEventListener('submit', async (e) => {
     e.preventDefault();
     const textInput = document.getElementById('new-comment-text');
     
     const newComment = {
+        id: 'comment-' + Date.now(), // Añadimos ID seguro
         taskId: currentViewTaskId,
         author: currentUser.username, 
         text: textInput.value,
