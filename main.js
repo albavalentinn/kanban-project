@@ -1,11 +1,12 @@
 const API_URL = 'http://localhost:3000/tasks';
 const API_PROJECTS = 'http://localhost:3000/projects';
 const API_USERS = 'http://localhost:3000/users';
+const API_COMMENTS = 'http://localhost:3000/comments'; 
 
 let allTasks = []; 
 let allProjects = []; 
 let currentUser = null; 
-let currentPriorityFilter = 'all'; // NUEVO: Guarda el filtro activo de la lista
+let currentPriorityFilter = 'all'; 
 
 const projectSelect = document.getElementById('project-select');
 const authContainer = document.getElementById('auth-container');
@@ -144,19 +145,17 @@ function renderList(tasks) {
 
         const isDone = task.status === 'done' ? 'text-strikethrough' : '';
 
+        // Título interactivo, cero botones
         listContent.innerHTML += `
             <div class="list-row" data-id="${task.id}">
                 <div class="list-row-title">
-                    <h4 class="${isDone}">${task.title}</h4>
+                    <h4 class="${isDone}" style="cursor: pointer; color: #0369a1; text-decoration: underline; margin: 0;" onclick="openTaskViewModal('${task.id}')" title="Hacer clic para editar y ver comentarios">${task.title}</h4>
                     <p class="${isDone}">${task.description}</p>
                 </div>
                 <div><span class="badge ${task.priority.toLowerCase()}">${task.priority}</span></div>
                 <div class="date ${isDone}">📅 ${task.dueDate}</div>
                 <div><strong>${statusText}</strong></div>
-                <div class="project-actions">
-                    <button class="btn-edit" onclick="openEditModal('${task.id}')" title="Editar">✏️</button>
-                    <button class="btn-delete" onclick="deleteTask('${task.id}')" title="Borrar">🗑️</button>
-                </div>
+                <div><!-- Espacio limpio --></div>
             </div>
         `;
     });
@@ -189,7 +188,7 @@ async function loadProjects() {
 
 projectSelect.addEventListener('change', () => {
     document.getElementById('search-input').value = ''; 
-    currentPriorityFilter = 'all'; // Resetea el filtro al cambiar de proyecto
+    currentPriorityFilter = 'all'; 
     document.querySelectorAll('.filter-btn').forEach(b => {
         b.classList.remove('active');
         if(b.getAttribute('data-priority') === 'all') b.classList.add('active');
@@ -325,10 +324,8 @@ async function getTasks() {
             );
         }
         
-        // El tablero recibe TODAS las tareas (solo afectadas por buscador)
         renderTasks(finalTasks); 
         
-        // La lista recibe las tareas filtradas también por prioridad
         let listTasks = finalTasks;
         if (currentPriorityFilter !== 'all') {
             listTasks = finalTasks.filter(task => task.priority === currentPriorityFilter);
@@ -345,17 +342,14 @@ function renderTasks(tasks) {
     let todoCount = 0; let doingCount = 0; let doneCount = 0;
 
     tasks.forEach(task => {
+        // Tarjeta ultra limpia. Todo el poder está en el clic del título.
         const cardHTML = `
             <article class="task-card" data-id="${task.id}">
-                <h3>${task.title}</h3>
+                <h3 style="cursor: pointer; color: #0369a1; margin-bottom: 0.5rem; text-decoration: underline;" onclick="openTaskViewModal('${task.id}')" title="Clic para editar y ver comentarios">${task.title}</h3>
                 <p>${task.description}</p>
-                <div class="card-footer">
+                <div class="card-footer" style="margin-top: 1rem;">
                     <span class="badge ${task.priority.toLowerCase()}">${task.priority}</span>
                     <span class="date">📅 ${task.dueDate}</span>
-                    <div>
-                        <button class="btn-edit" onclick="openEditModal('${task.id}')" title="Editar">✏️</button>
-                        <button class="btn-delete" onclick="deleteTask('${task.id}')" title="Borrar">🗑️</button>
-                    </div>
                 </div>
             </article>
         `;
@@ -405,7 +399,8 @@ document.getElementById('form-create-task').addEventListener('submit', async (ev
         priority: document.getElementById('task-priority').value,
         status: 'todo',
         dueDate: document.getElementById('task-date').value || 'Sin fecha',
-        projectId: projectSelect.value 
+        projectId: projectSelect.value,
+        id: Date.now().toString() 
     };
     await fetch(API_URL, {
         method: 'POST',
@@ -418,20 +413,46 @@ document.getElementById('form-create-task').addEventListener('submit', async (ev
 
 document.getElementById('search-input').addEventListener('input', () => getTasks());
 
-const modalEdit = document.getElementById('modal-edit-task');
-document.getElementById('btn-cancel-edit').addEventListener('click', () => modalEdit.close());
 
-window.openEditModal = function(taskId) {
+// ==========================================
+// 5. EVENTOS FILTROS DE PRIORIDAD
+// ==========================================
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        currentPriorityFilter = e.currentTarget.getAttribute('data-priority');
+        getTasks();
+    });
+});
+
+// ==========================================
+// 6. MODAL UNIFICADO: VISTA, EDICIÓN Y COMENTARIOS
+// ==========================================
+const modalTaskView = document.getElementById('modal-task-view');
+const btnCloseTaskView = document.getElementById('btn-close-task-view');
+const commentsList = document.getElementById('comments-list');
+const formAddComment = document.getElementById('form-add-comment');
+let currentViewTaskId = null; 
+
+// Abrir modal y rellenar los datos en el formulario
+window.openTaskViewModal = async function(taskId) {
     const task = allTasks.find(t => t.id === taskId);
     if (!task) return;
+    currentViewTaskId = task.id;
+
+    // Rellenamos directamente los inputs para poder editar rápido
     document.getElementById('edit-task-id').value = task.id;
     document.getElementById('edit-task-title').value = task.title;
     document.getElementById('edit-task-desc').value = task.description;
     document.getElementById('edit-task-priority').value = task.priority;
     document.getElementById('edit-task-date').value = task.dueDate !== 'Sin fecha' ? task.dueDate : '';
-    modalEdit.showModal();
+
+    modalTaskView.showModal();
+    await loadComments(task.id);
 };
 
+// Función para Actualizar
 document.getElementById('form-edit-task').addEventListener('submit', async (event) => {
     event.preventDefault();
     const id = document.getElementById('edit-task-id').value;
@@ -447,29 +468,76 @@ document.getElementById('form-edit-task').addEventListener('submit', async (even
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData)
     });
-    modalEdit.close(); getTasks(); 
+    modalTaskView.close(); getTasks(); 
 });
 
-window.deleteTask = async function(taskId) {
-    if (confirm("¿Borrar definitivamente?")) {
-        await fetch(`${API_URL}/${taskId}`, { method: 'DELETE' });
+// Función para Borrar Tarea
+document.getElementById('btn-delete-task').addEventListener('click', async () => {
+    if (confirm("¿Estás segura de que quieres borrar esta tarea definitivamente?")) {
+        await fetch(`${API_URL}/${currentViewTaskId}`, { method: 'DELETE' });
+        modalTaskView.close();
         getTasks(); 
     }
-};
+});
 
-// ==========================================
-// 5. EVENTOS FILTROS DE PRIORIDAD
-// ==========================================
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        // Quitamos la clase active a todos los botones
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        // Se la ponemos al que hemos clicado
-        e.currentTarget.classList.add('active');
-        // Guardamos el filtro y recargamos
-        currentPriorityFilter = e.currentTarget.getAttribute('data-priority');
-        getTasks();
-    });
+// Cargar y Renderizar Comentarios
+async function loadComments(taskId) {
+    try {
+        const response = await fetch(`${API_COMMENTS}?taskId=${taskId}`);
+        const comments = await response.json();
+        
+        commentsList.innerHTML = ''; 
+
+        if (comments.length === 0) {
+            commentsList.innerHTML = '<li style="color: #64748b; font-size: 0.9rem;">No hay comentarios todavía.</li>';
+            return;
+        }
+
+        comments.forEach(comment => {
+            const li = document.createElement('li');
+            li.style.cssText = 'background: #f1f5f9; padding: 0.8rem; border-radius: 6px; margin-bottom: 0.5rem; font-size: 0.9rem;';
+            const date = new Date(comment.createdAt).toLocaleDateString();
+            
+            li.innerHTML = `
+                <strong style="color: #0369a1;">${comment.author}</strong> 
+                <span style="color: #64748b; font-size: 0.8rem;">(${date})</span>
+                <p style="margin: 0.3rem 0 0 0; color: #334155;">${comment.text}</p>
+            `;
+            commentsList.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Error al cargar comentarios:", error);
+    }
+}
+
+// Añadir Nuevo Comentario
+formAddComment.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const textInput = document.getElementById('new-comment-text');
+    
+    const newComment = {
+        taskId: currentViewTaskId,
+        author: currentUser.username, 
+        text: textInput.value,
+        createdAt: new Date().toISOString()
+    };
+
+    try {
+        await fetch(API_COMMENTS, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newComment)
+        });
+
+        textInput.value = ''; 
+        await loadComments(currentViewTaskId); 
+    } catch (error) {
+        console.error("Error al guardar comentario:", error);
+    }
+});
+
+btnCloseTaskView.addEventListener('click', () => {
+    modalTaskView.close();
 });
 
 // ARRANQUE INICIAL

@@ -1,180 +1,259 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GetOrganized</title>
-   <link rel="icon" type="image/svg+xml" href="logo.svg">
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="logo.svg" />
+    <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-</head>
-<body>
-
+  </head>
+  <body>
     <!-- 0. PANTALLA DE LOGIN / REGISTRO -->
     <div id="auth-container" class="auth-container">
-        <div class="auth-card">
-            <h1 class="logo" style="text-align: center; margin-bottom: 2rem; color: #0052cc;">GetOrganized</h1>
-            <h2 id="auth-title">Iniciar Sesión</h2>
-            
-            <form id="auth-form">
-                <label for="auth-username">Usuario:</label>
-                <input type="text" id="auth-username" required placeholder="Tu nombre de usuario">
-                
-                <label for="auth-password">Contraseña:</label>
-                <input type="password" id="auth-password" required placeholder="********">
-                
-                <button type="submit" class="btn-primary" id="btn-auth-submit" style="width: 100%; margin-top: 1rem;">Entrar</button>
-            </form>
-            
-            <p class="auth-switch">
-                <span id="auth-switch-text">¿No tienes cuenta?</span> 
-                <a href="#" id="auth-switch-link">Regístrate aquí</a>
-            </p>
-        </div>
+      <div class="auth-card">
+        <h1
+          class="logo"
+          style="text-align: center; margin-bottom: 2rem; color: #0052cc"
+        >
+          GetOrganized
+        </h1>
+        <h2 id="auth-title">Iniciar Sesión</h2>
+
+        <form id="auth-form">
+          <label for="auth-username">Usuario:</label>
+          <input
+            type="text"
+            id="auth-username"
+            required
+            placeholder="Tu nombre de usuario"
+          />
+
+          <label for="auth-password">Contraseña:</label>
+          <input
+            type="password"
+            id="auth-password"
+            required
+            placeholder="********"
+          />
+
+          <button
+            type="submit"
+            class="btn-primary"
+            id="btn-auth-submit"
+            style="width: 100%; margin-top: 1rem"
+          >
+            Entrar
+          </button>
+        </form>
+
+        <p class="auth-switch">
+          <span id="auth-switch-text">¿No tienes cuenta?</span>
+          <a href="#" id="auth-switch-link">Regístrate aquí</a>
+        </p>
+      </div>
     </div>
 
     <!-- EL CONTENEDOR PRINCIPAL AHORA EMPIEZA OCULTO -->
     <div class="app-container hidden" id="app-container">
-        
-        <!-- 1. MENÚ LATERAL IZQUIERDO -->
-        <aside class="sidebar">
-            <div class="sidebar-logo">
-                <h2>GetOrganized</h2>
-            </div>
-            
-            <div class="sidebar-section">
-                <span class="section-title">ESPACIOS DE TRABAJO</span>
-                <select id="project-select" class="project-dropdown">
-                    <!-- Se llena con JS -->
-                </select>
-                <button id="btn-manage-projects" class="btn-text">⚙️ Administrar Proyectos</button>
-            </div>
-        </aside>
+      <!-- 1. MENÚ LATERAL IZQUIERDO -->
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <h2>GetOrganized</h2>
+        </div>
 
-        <!-- 2. CONTENIDO PRINCIPAL DERECHO -->
-        <div class="main-content">
-            <header class="top-header">
-                <div class="header-stats" id="stats-panel">
-                    <span class="stat-badge">Por Hacer: <b id="count-todo">0</b></span>
-                    <span class="stat-badge">En Proceso: <b id="count-doing">0</b></span>
-                    <span class="stat-badge">Finalizado: <b id="count-done">0</b></span>
-                </div>
-                <div class="header-search">
-                    <input type="text" id="search-input" placeholder="Buscar tareas...">
-                </div>
-            </header>
+        <div class="sidebar-section">
+          <span class="section-title">ESPACIOS DE TRABAJO</span>
+          <select id="project-select" class="project-dropdown">
+            <!-- Se llena con JS -->
+          </select>
+          <button id="btn-manage-projects" class="btn-text">
+            ⚙️ Administrar Proyectos
+          </button>
+        </div>
+      </aside>
 
-            <div class="toolbar">
-                <div class="toolbar-tabs">
-                    <button class="tab active">Tablero Kanban</button>
-                    <button class="tab">Lista</button>
-                </div>
-                <button id="btn-create-task" class="btn-primary">+ Nueva Tarea</button>
-            </div>
+      <!-- 2. CONTENIDO PRINCIPAL DERECHO -->
+      <div class="main-content">
+        <header class="top-header">
+          <div class="header-stats" id="stats-panel">
+            <span class="stat-badge">Por Hacer: <b id="count-todo">0</b></span>
+            <span class="stat-badge"
+              >En Proceso: <b id="count-doing">0</b></span
+            >
+            <span class="stat-badge">Finalizado: <b id="count-done">0</b></span>
+          </div>
+          <div class="header-search">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Buscar tareas..."
+            />
+          </div>
+        </header>
 
-            <!-- TABLERO KANBAN -->
-            <main class="kanban-board">
-                <section class="kanban-column" data-status="todo">
-                    <div class="column-header"><h2>Por Hacer</h2></div>
-                    <div class="task-list" id="todo-list"></div>
-                </section>
-                <section class="kanban-column" data-status="doing">
-                    <div class="column-header"><h2>En Proceso</h2></div>
-                    <div class="task-list" id="doing-list"></div>
-                </section>
-                <section class="kanban-column" data-status="done">
-                    <div class="column-header"><h2>Finalizado</h2></div>
-                    <div class="task-list" id="done-list"></div>
-                </section>
-            </main>
+        <div class="toolbar">
+          <div class="toolbar-tabs">
+            <button class="tab active">Tablero Kanban</button>
+            <button class="tab">Lista</button>
+          </div>
+          <button id="btn-create-task" class="btn-primary">
+            + Nueva Tarea
+          </button>
+        </div>
 
-            <!-- VISTA DE LISTA -->
-            <section id="list-board" class="list-board hidden">
-                <!-- FILTROS DE PRIORIDAD (Solo en lista) -->
-        <div class="list-filters">
+        <!-- TABLERO KANBAN -->
+        <main class="kanban-board">
+          <section class="kanban-column" data-status="todo">
+            <div class="column-header"><h2>Por Hacer</h2></div>
+            <div class="task-list" id="todo-list"></div>
+          </section>
+          <section class="kanban-column" data-status="doing">
+            <div class="column-header"><h2>En Proceso</h2></div>
+            <div class="task-list" id="doing-list"></div>
+          </section>
+          <section class="kanban-column" data-status="done">
+            <div class="column-header"><h2>Finalizado</h2></div>
+            <div class="task-list" id="done-list"></div>
+          </section>
+        </main>
+
+        <!-- VISTA DE LISTA -->
+        <section id="list-board" class="list-board hidden">
+          <!-- FILTROS DE PRIORIDAD (Solo en lista) -->
+          <div class="list-filters">
             <button class="filter-btn active" data-priority="all">Todas</button>
-            <button class="filter-btn" data-priority="Alta"><span class="dot red"></span> Alta</button>
-            <button class="filter-btn" data-priority="Media"><span class="dot blue"></span> Media</button>
-            <button class="filter-btn" data-priority="Baja"><span class="dot green"></span> Baja</button>
-        </div>
-                <div class="list-header">
-                    <span>Tarea</span>
-                    <span>Prioridad</span>
-                    <span>Fecha Límite</span>
-                    <span>Estado</span>
-                    <span>Acciones</span>
-                </div>
-                <div class="list-content" id="list-content">
-                    <!-- Las tareas en formato fila se inyectarán aquí con JS -->
-                </div>
-            </section>
-
-        </div>
+            <button class="filter-btn" data-priority="Alta">
+              <span class="dot red"></span> Alta
+            </button>
+            <button class="filter-btn" data-priority="Media">
+              <span class="dot blue"></span> Media
+            </button>
+            <button class="filter-btn" data-priority="Baja">
+              <span class="dot green"></span> Baja
+            </button>
+          </div>
+          <div class="list-header">
+            <span>Tarea</span>
+            <span>Prioridad</span>
+            <span>Fecha Límite</span>
+            <span>Estado</span>
+            <span>Acciones</span>
+          </div>
+          <div class="list-content" id="list-content">
+            <!-- Las tareas en formato fila se inyectarán aquí con JS -->
+          </div>
+        </section>
+      </div>
     </div>
 
     <!-- MODAL ADMINISTRAR PROYECTOS -->
     <dialog id="modal-manage-projects" class="modal">
-        <div class="modal-header">
-            <h3>Administrar Espacios</h3>
-            <button type="button" id="btn-close-manage-projects" class="btn-close">✖</button>
-        </div>
-        
-        <div class="manage-projects-container">
-            <form id="form-add-project" class="add-project-form">
-                <input type="text" id="new-project-name" required placeholder="Nombre del nuevo proyecto...">
-                <button type="submit" class="btn-primary">Añadir</button>
-            </form>
-            <ul id="manage-projects-list" class="projects-list"></ul>
-        </div>
+      <div class="modal-header">
+        <h3>Administrar Espacios</h3>
+        <button type="button" id="btn-close-manage-projects" class="btn-close">
+          ✖
+        </button>
+      </div>
+
+      <div class="manage-projects-container">
+        <form id="form-add-project" class="add-project-form">
+          <input
+            type="text"
+            id="new-project-name"
+            required
+            placeholder="Nombre del nuevo proyecto..."
+          />
+          <button type="submit" class="btn-primary">Añadir</button>
+        </form>
+        <ul id="manage-projects-list" class="projects-list"></ul>
+      </div>
     </dialog>
 
     <!-- MODAL PARA CREAR TAREA -->
     <dialog id="modal-create-task" class="modal">
-        <form id="form-create-task">
-            <h3>Crear Nueva Tarea</h3>
-            <label for="task-title">Título:</label>
-            <input type="text" id="task-title" required>
-            <label for="task-desc">Descripción:</label>
-            <textarea id="task-desc" required></textarea>
-            <label for="task-priority">Prioridad:</label>
-            <select id="task-priority">
-                <option value="Alta">Alta</option>
-                <option value="Media">Media</option>
-                <option value="Baja">Baja</option>
-            </select>
-            <label for="task-date">Fecha límite:</label>
-            <input type="date" id="task-date">
-            <div class="modal-actions">
-                <button type="button" id="btn-cancel-task" class="btn-secondary">Cancelar</button>
-                <button type="submit" class="btn-primary">Guardar</button>
-            </div>
-        </form>
+      <form id="form-create-task">
+        <h3>Crear Nueva Tarea</h3>
+        <label for="task-title">Título:</label>
+        <input type="text" id="task-title" required />
+        <label for="task-desc">Descripción:</label>
+        <textarea id="task-desc" required></textarea>
+        <label for="task-priority">Prioridad:</label>
+        <select id="task-priority">
+          <option value="Alta">Alta</option>
+          <option value="Media">Media</option>
+          <option value="Baja">Baja</option>
+        </select>
+        <label for="task-date">Fecha límite:</label>
+        <input type="date" id="task-date" />
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-task" class="btn-secondary">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary">Guardar</button>
+        </div>
+      </form>
     </dialog>
 
-    <!-- MODAL PARA EDITAR TAREA -->
-    <dialog id="modal-edit-task" class="modal">
-        <form id="form-edit-task">
-            <h3>Editar Tarea</h3>
-            <input type="hidden" id="edit-task-id">
-            <label for="edit-task-title">Título:</label>
-            <input type="text" id="edit-task-title" required>
-            <label for="edit-task-desc">Descripción:</label>
-            <textarea id="edit-task-desc" required></textarea>
-            <label for="edit-task-priority">Prioridad:</label>
-            <select id="edit-task-priority">
+    <!-- MODAL ÚNICO: VISTA, EDICIÓN Y COMENTARIOS -->
+    <dialog id="modal-task-view" class="modal">
+      <div class="modal-header">
+        <h3>Panel de Tarea</h3>
+        <button type="button" id="btn-close-task-view" class="btn-close">✖</button>
+      </div>
+
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem; padding-top: 1rem;">
+        
+        <!-- Formulario de Edición -->
+        <form id="form-edit-task" style="display: flex; flex-direction: column; gap: 0.8rem;">
+          <input type="hidden" id="edit-task-id" />
+          
+          <div>
+            <label for="edit-task-title" style="font-size: 0.9rem; font-weight: bold;">Título:</label>
+            <input type="text" id="edit-task-title" required style="width: 100%; padding: 0.5rem;" />
+          </div>
+          
+          <div>
+            <label for="edit-task-desc" style="font-size: 0.9rem; font-weight: bold;">Descripción:</label>
+            <textarea id="edit-task-desc" required style="width: 100%; padding: 0.5rem;"></textarea>
+          </div>
+          
+          <div style="display: flex; gap: 1rem;">
+            <div style="flex: 1;">
+              <label for="edit-task-priority" style="font-size: 0.9rem; font-weight: bold;">Prioridad:</label>
+              <select id="edit-task-priority" style="width: 100%; padding: 0.5rem;">
                 <option value="Alta">Alta</option>
                 <option value="Media">Media</option>
                 <option value="Baja">Baja</option>
-            </select>
-            <label for="edit-task-date">Fecha límite:</label>
-            <input type="date" id="edit-task-date">
-            <div class="modal-actions">
-                <button type="button" id="btn-cancel-edit" class="btn-secondary">Cancelar</button>
-                <button type="submit" class="btn-primary">Actualizar</button>
+              </select>
             </div>
+            <div style="flex: 1;">
+              <label for="edit-task-date" style="font-size: 0.9rem; font-weight: bold;">Fecha límite:</label>
+              <input type="date" id="edit-task-date" style="width: 100%; padding: 0.5rem;" />
+            </div>
+          </div>
+          
+          <div class="modal-actions" style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
+            <button type="button" id="btn-delete-task" class="btn-secondary" style="color: #dc2626; border-color: #dc2626;">🗑️ Eliminar Tarea</button>
+            <button type="submit" class="btn-primary">Actualizar Cambios</button>
+          </div>
         </form>
+
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0.5rem 0;">
+
+        <!-- Comentarios -->
+        <div class="comments-section">
+          <h4 style="margin-bottom: 0.8rem; color: #0f172a;">💬 Comentarios del equipo</h4>
+          <ul id="comments-list" class="comments-list" style="list-style: none; padding: 0; margin-bottom: 1rem; max-height: 150px; overflow-y: auto;">
+          </ul>
+          <form id="form-add-comment" style="display: flex; gap: 0.5rem;">
+            <input type="text" id="new-comment-text" placeholder="Escribe un comentario..." required style="flex-grow: 1; padding: 0.5rem;">
+            <button type="submit" class="btn-primary">Enviar</button>
+          </form>
+        </div>
+      </div>
     </dialog>
 
     <script src="main.js"></script>
-</body>
+  </body>
 </html>
