@@ -88,7 +88,9 @@ function crearBotonCerrarSesion() {
         logoutBtn.innerHTML = `🚪 Cerrar Sesión (${currentUser.username})`;
         logoutBtn.onclick = () => {
             localStorage.removeItem('kanban_user');
+            localStorage.removeItem('kanban_project');
             currentUser = null;
+            currentProjectId = null;
             appContainer.classList.add('hidden');
             authContainer.classList.remove('hidden');
             document.getElementById('auth-form').reset();
@@ -151,7 +153,7 @@ function renderList(tasks) {
             : '';
 
         listContent.innerHTML += `
-            <div class="list-row" data-id="${task.id}">
+            <article class="list-row" data-id="${task.id}">
                 <div class="list-row-title">
                     <div style="display: flex; align-items: center;">
                         <h4 class="${isDone}" style="cursor: pointer; color: #0369a1; text-decoration: underline; margin: 0;" onclick="openTaskViewModal('${task.id}')" title="Hacer clic para editar y ver comentarios">${task.title}</h4>
@@ -163,7 +165,7 @@ function renderList(tasks) {
                 <div class="date ${isDone}">📅 ${task.dueDate}</div>
                 <div><strong>${statusText}</strong></div>
                 <div><!-- Espacio limpio --></div>
-            </div>
+            </article>
         `;
     });
 }
@@ -181,8 +183,23 @@ async function loadProjects() {
         if (allProjects.length === 0) {
             projectList.innerHTML = '<li style="color: #6b778c; font-size: 0.9rem;">Sin proyectos</li>';
             currentProjectId = null;
+            localStorage.removeItem('kanban_project');
             renderTasks([]); renderList([]); return;
         }
+
+        // Recuperar el proyecto activo de la memoria local si existe
+        if (!currentProjectId) {
+            currentProjectId = localStorage.getItem('kanban_project');
+        }
+
+        // Verificar que el proyecto guardado realmente existe en la lista del usuario
+        const projectExists = allProjects.find(p => p.id === currentProjectId);
+        if (!projectExists) {
+            currentProjectId = allProjects[0].id;
+        }
+
+        // Guardar de forma persistente el proyecto activo actual
+        localStorage.setItem('kanban_project', currentProjectId);
 
         allProjects.forEach(proj => {
             const li = document.createElement('li');
@@ -205,6 +222,7 @@ async function loadProjects() {
                 document.querySelectorAll('#project-list li').forEach(el => el.classList.remove('active'));
                 li.classList.add('active');
                 currentProjectId = proj.id;
+                localStorage.setItem('kanban_project', currentProjectId);
 
                 document.getElementById('search-input').value = ''; 
                 currentPriorityFilter = 'all'; 
@@ -249,18 +267,13 @@ async function loadProjects() {
             projectList.appendChild(li);
         });
 
-        if (!currentProjectId && allProjects.length > 0) {
-            currentProjectId = allProjects[0].id;
-            projectList.firstChild.classList.add('active');
-        }
-
         getTasks(); 
     } catch (error) { console.error("Error", error); }
 }
 
 document.getElementById('btn-add-project').addEventListener('click', async () => {
     const newName = prompt("Introduce el nombre del nuevo proyecto:");
-    if (!newName || newName.trim() === "") return;
+    if (!newName || !newName.trim()) return;
     
     const newId = 'proyecto-' + Date.now();
     try {
@@ -271,6 +284,7 @@ document.getElementById('btn-add-project').addEventListener('click', async () =>
         });
         
         currentProjectId = newId; 
+        localStorage.setItem('kanban_project', currentProjectId);
         await loadProjects(); 
     } catch (error) { console.error("Error", error); }
 });
@@ -292,7 +306,10 @@ window.deleteProject = async function(id) {
     if (!confirm("¿Seguro que quieres borrar este proyecto entero y sus tareas?")) return;
     try {
         await fetch(`${API_PROJECTS}/${id}`, { method: 'DELETE' });
-        if (currentProjectId === id) currentProjectId = null; 
+        if (currentProjectId === id) {
+            currentProjectId = null; 
+            localStorage.removeItem('kanban_project');
+        }
         await loadProjects(); 
     } catch (error) { console.error("Error", error); }
 };
@@ -306,6 +323,13 @@ async function getTasks() {
 
         const response = await fetch(`${API_URL}?projectId=${currentProjectId}&_embed=comments`);
         allTasks = await response.json(); 
+        
+        allTasks.sort((a, b) => {
+            if (a.dueDate === 'Sin fecha' && b.dueDate === 'Sin fecha') return 0;
+            if (a.dueDate === 'Sin fecha') return 1;
+            if (b.dueDate === 'Sin fecha') return -1;
+            return new Date(a.dueDate) - new Date(b.dueDate);
+        });
         
         const searchInput = document.getElementById('search-input');
         const currentSearch = searchInput ? searchInput.value.toLowerCase() : '';
@@ -335,7 +359,6 @@ function renderTasks(tasks) {
     let todoCount = 0; let doingCount = 0; let doneCount = 0;
 
     tasks.forEach(task => {
-        
         const commentsBadge = (task.comments && task.comments.length > 0)
             ? `<span title="${task.comments.length} comentarios" style="display:inline-flex; align-items:center; gap:4px; font-size:0.75rem; background:#e2e8f0; padding:2px 8px; border-radius:12px; color:#475569;">💬 ${task.comments.length}</span>`
             : '';
@@ -393,22 +416,30 @@ document.getElementById('btn-cancel-task').addEventListener('click', () => modal
 document.getElementById('form-create-task').addEventListener('submit', async (event) => {
     event.preventDefault(); 
     if(!currentProjectId) { alert("¡Crea un proyecto primero!"); return; }
+    
+    const activeProj = currentProjectId;
+
     const newTask = {
         title: document.getElementById('task-title').value,
         description: document.getElementById('task-desc').value,
         priority: document.getElementById('task-priority').value,
         status: 'todo',
         dueDate: document.getElementById('task-date').value || 'Sin fecha',
-        projectId: currentProjectId, 
+        projectId: activeProj, 
         id: Date.now().toString() 
     };
+
     await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newTask)
     });
+
     document.getElementById('form-create-task').reset(); 
-    modalCreate.close(); getTasks(); 
+    modalCreate.close(); 
+    
+    currentProjectId = activeProj;
+    getTasks(); 
 });
 
 document.getElementById('search-input').addEventListener('input', () => getTasks());
@@ -492,7 +523,6 @@ async function loadComments(taskId) {
             li.style.cssText = 'background: #f1f5f9; padding: 0.8rem; border-radius: 6px; margin-bottom: 0.5rem; font-size: 0.9rem;';
             const date = new Date(comment.createdAt).toLocaleDateString();
             
-            // Lógica para mostrar botón Eliminar solo si eres el autor
             let deleteBtnHTML = '';
             if (comment.author === currentUser.username) {
                 deleteBtnHTML = `<button onclick="deleteComment('${comment.id}', '${taskId}')" style="background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; text-decoration: underline; padding: 0; margin-top: 0.4rem; font-weight: 500;">Eliminar</button>`;
@@ -511,13 +541,12 @@ async function loadComments(taskId) {
     }
 }
 
-// Nueva función para borrar comentarios
 window.deleteComment = async function(commentId, taskId) {
     if (confirm("¿Eliminar este comentario?")) {
         try {
             await fetch(`${API_COMMENTS}/${commentId}`, { method: 'DELETE' });
-            await getTasks(); // Refresca las tarjetas (el contador de burbuja)
-            await loadComments(taskId); // Refresca la lista de comentarios en el modal
+            await getTasks(); 
+            await loadComments(taskId); 
         } catch (error) {
             console.error("Error al borrar comentario:", error);
         }
@@ -529,7 +558,7 @@ formAddComment.addEventListener('submit', async (e) => {
     const textInput = document.getElementById('new-comment-text');
     
     const newComment = {
-        id: 'comment-' + Date.now(), // Añadimos ID seguro
+        id: 'comment-' + Date.now(), 
         taskId: currentViewTaskId,
         author: currentUser.username, 
         text: textInput.value,
