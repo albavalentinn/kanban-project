@@ -14,7 +14,7 @@
   "projects": [
     {
       "id": "proyecto-1",
-      "name": "Diseño Kanban",
+      "name": "Diseño Kanban 1",
       "userIds": [
         "user-1"
       ]
@@ -40,7 +40,7 @@
       "projectId": "proyecto-1"
     },
     {
-      "title": "Commit",
+      "title": "Commits",
       "description": "Hacer de vez en cuando.",
       "priority": "Baja",
       "status": "todo",
@@ -137,6 +137,24 @@
       "dueDate": "2026-09-12",
       "projectId": null,
       "id": "pXHAzN1OGWo"
+    },
+    {
+      "title": "Prueb",
+      "description": "dewkdew",
+      "priority": "Alta",
+      "status": "todo",
+      "dueDate": "2026-09-17",
+      "projectId": null,
+      "id": "7vVGvOFRrLg"
+    },
+    {
+      "title": "ewdfqwe",
+      "description": "ewfqe",
+      "priority": "Alta",
+      "status": "done",
+      "dueDate": "2026-09-16",
+      "projectId": null,
+      "id": "kibVxwszmkw"
     }
   ],
   "comments": [
@@ -155,11 +173,32 @@
       "createdAt": "2026-09-06T11:15:00Z"
     },
     {
-      "id": "WX7vmnx-H14",
+      "id": "FOsHEB4u7KQ",
+      "taskId": "7vVGvOFRrLg",
+      "author": "alba",
+      "text": "dewfq",
+      "createdAt": "2026-09-09T10:48:49.323Z"
+    },
+    {
+      "id": "UUkxnJp_ZXE",
+      "taskId": "7vVGvOFRrLg",
+      "author": "alba",
+      "text": "ewfe",
+      "createdAt": "2026-09-09T10:48:53.215Z"
+    },
+    {
+      "id": "G2eqA9avXyk",
       "taskId": "md0OrNYbHms",
       "author": "alba",
       "text": "Simple recordatorio",
-      "createdAt": "2026-09-09T09:29:36.856Z"
+      "createdAt": "2026-09-09T11:04:59.124Z"
+    },
+    {
+      "id": "nqlDYnp-sFU",
+      "taskId": "kibVxwszmkw",
+      "author": "alba",
+      "text": "erferw",
+      "createdAt": "2026-09-09T11:08:07.778Z"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

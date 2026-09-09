@@ -64,13 +64,12 @@
 
         <div class="sidebar-section">
           <span class="section-title">ESPACIOS DE TRABAJO</span>
-          
+
           <!-- Lista de proyectos -->
           <ul id="project-list" class="sidebar-nav">
             <!-- Se llena dinámicamente con JS -->
           </ul>
 
-          <!-- NUEVO BOTÓN PARA AÑADIR -->
           <!-- NUEVO BOTÓN PARA AÑADIR CON ESTILO DASHED -->
           <button id="btn-add-project" class="btn-add-dashed">
             + Añadir Proyecto
@@ -181,55 +180,134 @@
     <dialog id="modal-task-view" class="modal">
       <div class="modal-header">
         <h3>Panel de Tarea</h3>
-        <button type="button" id="btn-close-task-view" class="btn-close">✖</button>
+        <button type="button" id="btn-close-task-view" class="btn-close">
+          ✖
+        </button>
       </div>
 
-      <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem; padding-top: 1rem;">
-        
+      <div
+        class="modal-body"
+        style="
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          padding-top: 1rem;
+        "
+      >
         <!-- Formulario de Edición -->
-        <form id="form-edit-task" style="display: flex; flex-direction: column; gap: 0.8rem;">
+        <form
+          id="form-edit-task"
+          style="display: flex; flex-direction: column; gap: 0.8rem"
+        >
           <input type="hidden" id="edit-task-id" />
-          
+
           <div>
-            <label for="edit-task-title" style="font-size: 0.9rem; font-weight: bold;">Título:</label>
-            <input type="text" id="edit-task-title" required style="width: 100%; padding: 0.5rem;" />
+            <label
+              for="edit-task-title"
+              style="font-size: 0.9rem; font-weight: bold"
+              >Título:</label
+            >
+            <input
+              type="text"
+              id="edit-task-title"
+              required
+              style="width: 100%; padding: 0.5rem"
+            />
           </div>
-          
+
           <div>
-            <label for="edit-task-desc" style="font-size: 0.9rem; font-weight: bold;">Descripción:</label>
-            <textarea id="edit-task-desc" required style="width: 100%; padding: 0.5rem;"></textarea>
+            <label
+              for="edit-task-desc"
+              style="font-size: 0.9rem; font-weight: bold"
+              >Descripción:</label
+            >
+            <textarea
+              id="edit-task-desc"
+              required
+              style="width: 100%; padding: 0.5rem"
+            ></textarea>
           </div>
-          
-          <div style="display: flex; gap: 1rem;">
-            <div style="flex: 1;">
-              <label for="edit-task-priority" style="font-size: 0.9rem; font-weight: bold;">Prioridad:</label>
-              <select id="edit-task-priority" style="width: 100%; padding: 0.5rem;">
+
+          <div style="display: flex; gap: 1rem">
+            <div style="flex: 1">
+              <label
+                for="edit-task-priority"
+                style="font-size: 0.9rem; font-weight: bold"
+                >Prioridad:</label
+              >
+              <select
+                id="edit-task-priority"
+                style="width: 100%; padding: 0.5rem"
+              >
                 <option value="Alta">Alta</option>
                 <option value="Media">Media</option>
                 <option value="Baja">Baja</option>
               </select>
             </div>
-            <div style="flex: 1;">
-              <label for="edit-task-date" style="font-size: 0.9rem; font-weight: bold;">Fecha límite:</label>
-              <input type="date" id="edit-task-date" style="width: 100%; padding: 0.5rem;" />
+            <div style="flex: 1">
+              <label
+                for="edit-task-date"
+                style="font-size: 0.9rem; font-weight: bold"
+                >Fecha límite:</label
+              >
+              <input
+                type="date"
+                id="edit-task-date"
+                style="width: 100%; padding: 0.5rem"
+              />
             </div>
           </div>
-          
-          <div class="modal-actions" style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
-            <button type="button" id="btn-delete-task" class="btn-secondary" style="color: #dc2626; border-color: #dc2626;">🗑️ Eliminar Tarea</button>
-            <button type="submit" class="btn-primary">Actualizar Cambios</button>
+
+          <div
+            class="modal-actions"
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-top: 0.5rem;
+            "
+          >
+            <button
+              type="button"
+              id="btn-delete-task"
+              class="btn-secondary"
+              style="color: #dc2626; border-color: #dc2626"
+            >
+              🗑️ Eliminar Tarea
+            </button>
+            <button type="submit" class="btn-primary">
+              Actualizar Cambios
+            </button>
           </div>
         </form>
 
-        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0.5rem 0;">
+        <hr
+          style="border: none; border-top: 1px solid #e2e8f0; margin: 0.5rem 0"
+        />
 
         <!-- Comentarios -->
         <div class="comments-section">
-          <h4 style="margin-bottom: 0.8rem; color: #0f172a;">💬 Comentarios del equipo</h4>
-          <ul id="comments-list" class="comments-list" style="list-style: none; padding: 0; margin-bottom: 1rem; max-height: 150px; overflow-y: auto;">
-          </ul>
-          <form id="form-add-comment" style="display: flex; gap: 0.5rem;">
-            <input type="text" id="new-comment-text" placeholder="Escribe un comentario..." required style="flex-grow: 1; padding: 0.5rem;">
+          <h4 style="margin-bottom: 0.8rem; color: #0f172a">
+            💬 Comentarios del equipo
+          </h4>
+          <ul
+            id="comments-list"
+            class="comments-list"
+            style="
+              list-style: none;
+              padding: 0;
+              margin-bottom: 1rem;
+              max-height: 150px;
+              overflow-y: auto;
+            "
+          ></ul>
+          <form id="form-add-comment" style="display: flex; gap: 0.5rem">
+            <input
+              type="text"
+              id="new-comment-text"
+              placeholder="Escribe un comentario..."
+              required
+              style="flex-grow: 1; padding: 0.5rem"
+            />
             <button type="submit" class="btn-primary">Enviar</button>
           </form>
         </div>
