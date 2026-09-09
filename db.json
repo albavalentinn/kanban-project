@@ -14,7 +14,14 @@
   "projects": [
     {
       "id": "proyecto-1",
-      "name": "DISEÑO KANBAN",
+      "name": "Diseño Kanban",
+      "userIds": [
+        "user-1"
+      ]
+    },
+    {
+      "id": "hqt8JfwKpnY",
+      "name": "Diseño Logo Burguer",
       "userIds": [
         "user-1"
       ]

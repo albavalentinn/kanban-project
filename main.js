@@ -7,8 +7,9 @@ let allTasks = [];
 let allProjects = []; 
 let currentUser = null; 
 let currentPriorityFilter = 'all'; 
+let currentProjectId = null; 
 
-const projectSelect = document.getElementById('project-select');
+const projectList = document.getElementById('project-list'); 
 const authContainer = document.getElementById('auth-container');
 const appContainer = document.getElementById('app-container');
 
@@ -145,7 +146,6 @@ function renderList(tasks) {
 
         const isDone = task.status === 'done' ? 'text-strikethrough' : '';
         
-        // Creamos la insignia de comentarios si los tiene
         const commentsBadge = (task.comments && task.comments.length > 0)
             ? `<span title="${task.comments.length} comentarios" style="display:inline-flex; align-items:center; gap:4px; font-size:0.75rem; background:#e2e8f0; padding:2px 8px; border-radius:12px; color:#475569; margin-left: 8px; font-weight: bold;">💬 ${task.comments.length}</span>`
             : '';
@@ -169,128 +169,118 @@ function renderList(tasks) {
 }
 
 // ==========================================
-// 3. GESTIÓN DE PROYECTOS (Equipos)
+// 3. GESTIÓN DE PROYECTOS DIRECTA EN LISTA
 // ==========================================
 async function loadProjects() {
     try {
         const response = await fetch(API_PROJECTS);
         const todosLosProyectos = await response.json();
         allProjects = todosLosProyectos.filter(proj => proj.userIds && proj.userIds.includes(currentUser.id));
-        projectSelect.innerHTML = ''; 
+        projectList.innerHTML = ''; 
         
         if (allProjects.length === 0) {
-            projectSelect.innerHTML = '<option value="">Sin proyectos</option>';
+            projectList.innerHTML = '<li style="color: #6b778c; font-size: 0.9rem;">Sin proyectos</li>';
+            currentProjectId = null;
             renderTasks([]); renderList([]); return;
         }
 
         allProjects.forEach(proj => {
-            const option = document.createElement('option');
-            option.value = proj.id;
-            option.textContent = proj.name;
-            projectSelect.appendChild(option);
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            li.style.alignItems = 'center';
+            
+            if (currentProjectId === proj.id) {
+                li.classList.add('active');
+            }
+
+            // Nombre del proyecto (hace de botón invisible)
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = proj.name;
+            nameSpan.style.flex = '1';
+            nameSpan.style.overflow = 'hidden';
+            nameSpan.style.textOverflow = 'ellipsis';
+            nameSpan.style.whiteSpace = 'nowrap';
+            
+            // Evento para seleccionar el proyecto
+            li.addEventListener('click', () => {
+                document.querySelectorAll('#project-list li').forEach(el => el.classList.remove('active'));
+                li.classList.add('active');
+                currentProjectId = proj.id;
+
+                document.getElementById('search-input').value = ''; 
+                currentPriorityFilter = 'all'; 
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active');
+                    if(b.getAttribute('data-priority') === 'all') b.classList.add('active');
+                });
+                getTasks();
+            });
+
+            // Contenedor de las herramientas de edición
+            const actionsDiv = document.createElement('div');
+            actionsDiv.style.display = 'flex';
+            actionsDiv.style.gap = '8px';
+
+            const btnEdit = document.createElement('button');
+            btnEdit.innerHTML = '✏️';
+            btnEdit.style.cssText = 'background:none; border:none; cursor:pointer; font-size:0.85rem; padding:0; opacity: 0.6; transition: opacity 0.2s;';
+            btnEdit.title = "Renombrar";
+            btnEdit.onmouseover = () => btnEdit.style.opacity = '1';
+            btnEdit.onmouseout = () => btnEdit.style.opacity = '0.6';
+            btnEdit.onclick = (e) => {
+                e.stopPropagation(); // Evitamos que al clicar el lápiz, se seleccione el proyecto de fondo
+                editProject(proj.id, proj.name);
+            };
+
+            const btnDelete = document.createElement('button');
+            btnDelete.innerHTML = '🗑️';
+            btnDelete.style.cssText = 'background:none; border:none; cursor:pointer; font-size:0.85rem; padding:0; opacity: 0.6; transition: opacity 0.2s;';
+            btnDelete.title = "Borrar";
+            btnDelete.onmouseover = () => btnDelete.style.opacity = '1';
+            btnDelete.onmouseout = () => btnDelete.style.opacity = '0.6';
+            btnDelete.onclick = (e) => {
+                e.stopPropagation(); // Evitamos conflicto de clics
+                deleteProject(proj.id);
+            };
+
+            actionsDiv.appendChild(btnEdit);
+            actionsDiv.appendChild(btnDelete);
+
+            li.appendChild(nameSpan);
+            li.appendChild(actionsDiv);
+            projectList.appendChild(li);
         });
+
+        if (!currentProjectId && allProjects.length > 0) {
+            currentProjectId = allProjects[0].id;
+            projectList.firstChild.classList.add('active');
+        }
+
         getTasks(); 
     } catch (error) { console.error("Error", error); }
 }
 
-projectSelect.addEventListener('change', () => {
-    document.getElementById('search-input').value = ''; 
-    currentPriorityFilter = 'all'; 
-    document.querySelectorAll('.filter-btn').forEach(b => {
-        b.classList.remove('active');
-        if(b.getAttribute('data-priority') === 'all') b.classList.add('active');
-    });
-    getTasks();
-});
-
-const modalManageProjects = document.getElementById('modal-manage-projects');
-document.getElementById('btn-manage-projects').addEventListener('click', () => { renderManageProjectsList(); modalManageProjects.showModal(); });
-document.getElementById('btn-close-manage-projects').addEventListener('click', () => modalManageProjects.close());
-
-function renderManageProjectsList() {
-    const list = document.getElementById('manage-projects-list');
-    list.innerHTML = '';
-    allProjects.forEach(proj => {
-        const li = document.createElement('li');
-        li.className = 'project-list-item';
-        li.innerHTML = `
-            <span>${proj.name} <small style="color: #6b778c;">👥 (${proj.userIds.length})</small></span>
-            <div class="project-actions">
-                <button onclick="inviteToProject('${proj.id}')" title="Añadir miembro">➕</button>
-                <button onclick="removeFromProject('${proj.id}')" title="Expulsar miembro">➖</button>
-                <button onclick="editProject('${proj.id}', '${proj.name}')" title="Renombrar">✏️</button>
-                <button onclick="deleteProject('${proj.id}')" title="Borrar">🗑️</button>
-            </div>
-        `;
-        list.appendChild(li);
-    });
-}
-
-window.inviteToProject = async function(projectId) {
-    const usernameToInvite = prompt("Introduce el nombre de usuario de tu compañero:");
-    if (!usernameToInvite) return;
-    try {
-        const res = await fetch(API_USERS);
-        const allUsers = await res.json();
-        const userToInvite = allUsers.find(u => u.username === usernameToInvite.trim());
-        if (!userToInvite) { alert("No existe usuario con ese nombre."); return; }
-        
-        const projRes = await fetch(`${API_PROJECTS}/${projectId}`);
-        const project = await projRes.json();
-        if (project.userIds.includes(userToInvite.id)) { alert("Ya está en este proyecto."); return; }
-        
-        project.userIds.push(userToInvite.id);
-        await fetch(`${API_PROJECTS}/${projectId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userIds: project.userIds })
-        });
-        alert(`¡Misión cumplida! ${userToInvite.username} ahora tiene acceso.`);
-        await loadProjects(); renderManageProjectsList();
-    } catch (error) { console.error("Error", error); }
-};
-
-window.removeFromProject = async function(projectId) {
-    const usernameToRemove = prompt("Introduce el nombre del usuario a expulsar:");
-    if (!usernameToRemove) return;
-    try {
-        const res = await fetch(API_USERS);
-        const allUsers = await res.json();
-        const userToRemove = allUsers.find(u => u.username === usernameToRemove.trim());
-        if (!userToRemove) { alert("No existe usuario con ese nombre."); return; }
-        if (userToRemove.id === currentUser.id) { alert("¡No puedes expulsarte a ti misma!"); return; }
-        
-        const projRes = await fetch(`${API_PROJECTS}/${projectId}`);
-        const project = await projRes.json();
-        if (!project.userIds.includes(userToRemove.id)) { alert("No forma parte del proyecto."); return; }
-        
-        const nuevaLista = project.userIds.filter(id => id !== userToRemove.id);
-        await fetch(`${API_PROJECTS}/${projectId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userIds: nuevaLista })
-        });
-        alert(`¡Listo! Usuario expulsado.`);
-        await loadProjects(); renderManageProjectsList();
-    } catch (error) { console.error("Error", error); }
-};
-
-document.getElementById('form-add-project').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const input = document.getElementById('new-project-name');
+// Botón de Crear Nuevo Proyecto
+document.getElementById('btn-add-project').addEventListener('click', async () => {
+    const newName = prompt("Introduce el nombre del nuevo proyecto:");
+    if (!newName || newName.trim() === "") return;
+    
     const newId = 'proyecto-' + Date.now();
     try {
         await fetch(API_PROJECTS, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: newId, name: input.value, userIds: [currentUser.id] })
+            body: JSON.stringify({ id: newId, name: newName.trim(), userIds: [currentUser.id] })
         });
-        input.value = ''; await loadProjects(); renderManageProjectsList(); 
+        
+        currentProjectId = newId; 
+        await loadProjects(); 
     } catch (error) { console.error("Error", error); }
 });
 
 window.editProject = async function(id, oldName) {
-    const newName = prompt("Introduce nuevo nombre:", oldName);
+    const newName = prompt("Introduce el nuevo nombre del proyecto:", oldName);
     if (!newName || newName === oldName) return;
     try {
         await fetch(`${API_PROJECTS}/${id}`, {
@@ -298,15 +288,16 @@ window.editProject = async function(id, oldName) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: newName })
         });
-        await loadProjects(); renderManageProjectsList();
+        await loadProjects(); 
     } catch (error) { console.error("Error", error); }
 };
 
 window.deleteProject = async function(id) {
-    if (!confirm("¿Seguro que quieres borrar este proyecto entero?")) return;
+    if (!confirm("¿Seguro que quieres borrar este proyecto entero y sus tareas?")) return;
     try {
         await fetch(`${API_PROJECTS}/${id}`, { method: 'DELETE' });
-        await loadProjects(); renderManageProjectsList();
+        if (currentProjectId === id) currentProjectId = null; 
+        await loadProjects(); 
     } catch (error) { console.error("Error", error); }
 };
 
@@ -315,11 +306,9 @@ window.deleteProject = async function(id) {
 // ==========================================
 async function getTasks() {
     try {
-        const currentProject = projectSelect.value;
-        if (!currentProject) { renderTasks([]); renderList([]); return; }
+        if (!currentProjectId) { renderTasks([]); renderList([]); return; }
 
-        // TRUCO MAGNÍFICO: _embed=comments hace que json-server nos devuelva cada tarea con un array de sus comentarios dentro.
-        const response = await fetch(`${API_URL}?projectId=${currentProject}&_embed=comments`);
+        const response = await fetch(`${API_URL}?projectId=${currentProjectId}&_embed=comments`);
         allTasks = await response.json(); 
         
         const searchInput = document.getElementById('search-input');
@@ -351,7 +340,6 @@ function renderTasks(tasks) {
 
     tasks.forEach(task => {
         
-        // Creamos la insignia de comentarios si los tiene
         const commentsBadge = (task.comments && task.comments.length > 0)
             ? `<span title="${task.comments.length} comentarios" style="display:inline-flex; align-items:center; gap:4px; font-size:0.75rem; background:#e2e8f0; padding:2px 8px; border-radius:12px; color:#475569;">💬 ${task.comments.length}</span>`
             : '';
@@ -408,14 +396,14 @@ document.getElementById('btn-cancel-task').addEventListener('click', () => modal
 
 document.getElementById('form-create-task').addEventListener('submit', async (event) => {
     event.preventDefault(); 
-    if(!projectSelect.value) { alert("¡Crea un proyecto primero!"); return; }
+    if(!currentProjectId) { alert("¡Crea un proyecto primero!"); return; }
     const newTask = {
         title: document.getElementById('task-title').value,
         description: document.getElementById('task-desc').value,
         priority: document.getElementById('task-priority').value,
         status: 'todo',
         dueDate: document.getElementById('task-date').value || 'Sin fecha',
-        projectId: projectSelect.value,
+        projectId: currentProjectId, // Usamos la variable global
         id: Date.now().toString() 
     };
     await fetch(API_URL, {
@@ -451,7 +439,6 @@ const commentsList = document.getElementById('comments-list');
 const formAddComment = document.getElementById('form-add-comment');
 let currentViewTaskId = null; 
 
-// Abrir modal y rellenar los datos en el formulario
 window.openTaskViewModal = async function(taskId) {
     const task = allTasks.find(t => t.id === taskId);
     if (!task) return;
@@ -467,7 +454,6 @@ window.openTaskViewModal = async function(taskId) {
     await loadComments(task.id);
 };
 
-// Función para Actualizar
 document.getElementById('form-edit-task').addEventListener('submit', async (event) => {
     event.preventDefault();
     const id = document.getElementById('edit-task-id').value;
@@ -486,7 +472,6 @@ document.getElementById('form-edit-task').addEventListener('submit', async (even
     modalTaskView.close(); getTasks(); 
 });
 
-// Función para Borrar Tarea
 document.getElementById('btn-delete-task').addEventListener('click', async () => {
     if (confirm("¿Estás segura de que quieres borrar esta tarea definitivamente?")) {
         await fetch(`${API_URL}/${currentViewTaskId}`, { method: 'DELETE' });
@@ -495,7 +480,6 @@ document.getElementById('btn-delete-task').addEventListener('click', async () =>
     }
 });
 
-// Cargar y Renderizar Comentarios
 async function loadComments(taskId) {
     try {
         const response = await fetch(`${API_COMMENTS}?taskId=${taskId}`);
@@ -525,7 +509,6 @@ async function loadComments(taskId) {
     }
 }
 
-// Añadir Nuevo Comentario
 formAddComment.addEventListener('submit', async (e) => {
     e.preventDefault();
     const textInput = document.getElementById('new-comment-text');
@@ -545,8 +528,6 @@ formAddComment.addEventListener('submit', async (e) => {
         });
 
         textInput.value = ''; 
-        // ¡Importante! Al enviar un comentario, volvemos a cargar las tareas del fondo
-        // para que se actualice la pequeña burbuja visual en el tablero
         await getTasks(); 
         await loadComments(currentViewTaskId); 
     } catch (error) {

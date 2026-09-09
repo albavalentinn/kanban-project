@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <!-- EL CONTENEDOR PRINCIPAL AHORA EMPIEZA OCULTO -->
+    <!-- EL CONTENEDOR PRINCIPAL -->
     <div class="app-container hidden" id="app-container">
       <!-- 1. MENÚ LATERAL IZQUIERDO -->
       <aside class="sidebar">
@@ -64,11 +64,16 @@
 
         <div class="sidebar-section">
           <span class="section-title">ESPACIOS DE TRABAJO</span>
-          <select id="project-select" class="project-dropdown">
-            <!-- Se llena con JS -->
-          </select>
-          <button id="btn-manage-projects" class="btn-text">
-            ⚙️ Administrar Proyectos
+          
+          <!-- Lista de proyectos -->
+          <ul id="project-list" class="sidebar-nav">
+            <!-- Se llena dinámicamente con JS -->
+          </ul>
+
+          <!-- NUEVO BOTÓN PARA AÑADIR -->
+          <!-- NUEVO BOTÓN PARA AÑADIR CON ESTILO DASHED -->
+          <button id="btn-add-project" class="btn-add-dashed">
+            + Añadir Proyecto
           </button>
         </div>
       </aside>
@@ -120,7 +125,7 @@
 
         <!-- VISTA DE LISTA -->
         <section id="list-board" class="list-board hidden">
-          <!-- FILTROS DE PRIORIDAD (Solo en lista) -->
+          <!-- FILTROS DE PRIORIDAD -->
           <div class="list-filters">
             <button class="filter-btn active" data-priority="all">Todas</button>
             <button class="filter-btn" data-priority="Alta">
@@ -146,29 +151,6 @@
         </section>
       </div>
     </div>
-
-    <!-- MODAL ADMINISTRAR PROYECTOS -->
-    <dialog id="modal-manage-projects" class="modal">
-      <div class="modal-header">
-        <h3>Administrar Espacios</h3>
-        <button type="button" id="btn-close-manage-projects" class="btn-close">
-          ✖
-        </button>
-      </div>
-
-      <div class="manage-projects-container">
-        <form id="form-add-project" class="add-project-form">
-          <input
-            type="text"
-            id="new-project-name"
-            required
-            placeholder="Nombre del nuevo proyecto..."
-          />
-          <button type="submit" class="btn-primary">Añadir</button>
-        </form>
-        <ul id="manage-projects-list" class="projects-list"></ul>
-      </div>
-    </dialog>
 
     <!-- MODAL PARA CREAR TAREA -->
     <dialog id="modal-create-task" class="modal">

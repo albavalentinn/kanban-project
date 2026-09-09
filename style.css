@@ -39,7 +39,7 @@ body {
 /* Títulos de sección (como ESPACIOS DE TRABAJO) */
 .section-title {
   font-size: 0.85rem;
-  color: #6b778c; 
+  color: #090b0f; 
   font-weight: bold;
   margin-bottom: 0.8rem;
   display: block;
@@ -80,15 +80,15 @@ body {
   font-weight: bold;
 }
 
-/* Botones de acción laterales (Administrar y Cerrar Sesión) */
+/* Botones de acción laterales (Cerrar Sesión) */
 .btn-text {
   background: none;
   border: none;
   color: #6b778c; 
   font-size: 0.85rem;
-  font-weight: bold; /* Igual que el título de sección */
-  letter-spacing: 0.5px; /* Mismo espaciado */
-  text-transform: uppercase; /* Todo en mayúsculas */
+  font-weight: bold; 
+  letter-spacing: 0.5px; 
+  text-transform: uppercase; 
   cursor: pointer;
   margin-top: 1rem;
   padding: 0;
@@ -99,6 +99,30 @@ body {
 }
 .btn-text:hover {
   color: #172b4d; 
+}
+
+/* ESTILO BOTÓN AÑADIR PROYECTO (DASHED) */
+.btn-add-dashed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  background-color: rgba(0, 82, 204, 0.05); /* Fondo azul casi transparente */
+  border: 2px dashed rgba(0, 82, 204, 0.4); /* Borde punteado azul suave */
+  border-radius: 6px;
+  color: #0052cc;
+  font-weight: bold;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-add-dashed:hover {
+  background-color: rgba(0, 82, 204, 0.1); /* Se oscurece un pelín al pasar el ratón */
+  border-color: #0052cc; /* El borde se vuelve sólido/fuerte */
 }
 
 /* Regla del botón logout (Mantiene su rojo corporativo) */
@@ -132,7 +156,7 @@ body {
   gap: 1.5rem;
 }
 .stat-badge {
-  color: #f3f5f7; 
+  color: #c1c7d0; 
   font-size: 0.95rem;
 }
 .stat-badge b {
@@ -325,7 +349,7 @@ body {
   margin-top: 1rem;
 }
 
-/* MODAL DE ADMINISTRAR PROYECTOS */
+/* MODAL DE ADMINISTRAR PROYECTOS (Mantenemos clases modales base por si acaso) */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -341,41 +365,6 @@ body {
   font-size: 1.2rem;
   cursor: pointer;
   color: #5e6c84;
-}
-.add-project-form {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  flex-direction: row !important;
-}
-.add-project-form input {
-  margin-bottom: 0 !important;
-  flex: 1;
-}
-.projects-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 250px;
-  overflow-y: auto;
-}
-.project-list-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.8rem;
-  border-bottom: 1px solid #dfe1e6;
-  font-size: 0.95rem;
-}
-.project-list-item:last-child {
-  border-bottom: none;
-}
-.project-actions button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-left: 0.5rem;
 }
 
 /* =========================================
@@ -565,7 +554,7 @@ body {
         flex-direction: column;
         gap: 0.5rem;
     }
-    .btn-text { margin-top: 0; }
+    .btn-text, .btn-add-dashed { margin-top: 0; }
 
     .top-header {
         padding: 1rem;
