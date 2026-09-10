@@ -361,7 +361,12 @@ function renderTasks(tasks) {
         const cardHTML = `
             <article class="task-card" data-id="${task.id}">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 8px;">
-                    <h3 style="cursor: pointer; color: #0369a1; margin: 0; text-decoration: underline;" onclick="openTaskViewModal('${task.id}')" title="Clic para editar y ver comentarios">${task.title}</h3>
+                    <!-- INICIO: Aquí hemos añadido el icono drag-handle -->
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="drag-handle" style="cursor: grab; color: #a5adba; font-size: 1.2rem; font-weight: bold; user-select: none;" title="Arrastrar tarea">⋮⋮</span>
+                        <h3 style="cursor: pointer; color: #0369a1; margin: 0; text-decoration: underline;" onclick="openTaskViewModal('${task.id}')" title="Clic para editar y ver comentarios">${task.title}</h3>
+                    </div>
+                    <!-- FIN DEL HANDLE -->
                     ${commentsBadge}
                 </div>
                 <p>${task.description}</p>
@@ -383,7 +388,12 @@ function renderTasks(tasks) {
 
 function initSortable() {
     const sortableOptions = {
-        group: 'kanban', animation: 150,
+        group: 'kanban', 
+        animation: 150,
+        
+        // Aquí le decimos que SOLO se puede arrastrar desde el icono
+        handle: '.drag-handle', 
+
         onEnd: function (event) {
             const taskId = event.item.getAttribute('data-id'); 
             const newStatus = event.to.parentElement.getAttribute('data-status');
@@ -694,13 +704,13 @@ function renderCalendar() {
                 if (!tasksByDate[dateStr]) tasksByDate[dateStr] = [];
                 
                 const title = card.querySelector('h3').textContent;
-                const id = card.getAttribute('data-id'); // Capturamos el ID
+                const id = card.getAttribute('data-id'); 
                 
                 let priority = 'baja';
                 if (card.querySelector('.alta')) priority = 'alta';
                 else if (card.querySelector('.media')) priority = 'media';
 
-                tasksByDate[dateStr].push({ id, title, priority }); // Guardamos el ID
+                tasksByDate[dateStr].push({ id, title, priority }); 
             }
         }
     });
@@ -728,7 +738,6 @@ function renderCalendar() {
                 taskEl.className = `calendar-task ${task.priority}`; 
                 taskEl.textContent = task.title;
                 
-                // Hacemos que la tarea sea clicable
                 taskEl.onclick = () => window.openTaskViewModal(task.id);
                 
                 cell.appendChild(taskEl);
