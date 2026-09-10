@@ -610,3 +610,29 @@ if (btnHamburger && sidebar) {
         }
     });
 }
+
+// ==========================================
+// 8. BUSCADOR MÓVIL
+// ==========================================
+const btnSearchMobile = document.getElementById('btn-search-mobile');
+const searchInput = document.getElementById('search-input');
+
+if (btnSearchMobile && searchInput) {
+    // Abrir/cerrar el buscador al tocar la lupa
+    btnSearchMobile.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita que se cierre instantáneamente
+        searchInput.classList.toggle('show-mobile');
+        
+        // Magia UX: Si se ha abierto, ponemos el cursor dentro automáticamente
+        if (searchInput.classList.contains('show-mobile')) {
+            searchInput.focus(); 
+        }
+    });
+
+    // Cerrar el buscador al tocar cualquier otra parte de la pantalla
+    document.addEventListener('click', (e) => {
+        if (searchInput.classList.contains('show-mobile') && e.target !== searchInput) {
+            searchInput.classList.remove('show-mobile');
+        }
+    });
+}

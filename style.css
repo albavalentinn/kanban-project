@@ -109,8 +109,8 @@ body {
   width: 100%;
   padding: 0.8rem;
   margin-top: 1rem;
-  background-color: rgba(0, 82, 204, 0.05); /* Fondo azul casi transparente */
-  border: 2px dashed rgba(0, 82, 204, 0.4); /* Borde punteado azul suave */
+  background-color: rgba(0, 82, 204, 0.05);
+  border: 2px dashed rgba(0, 82, 204, 0.4); 
   border-radius: 6px;
   color: #0052cc;
   font-weight: bold;
@@ -121,8 +121,8 @@ body {
   transition: all 0.2s ease;
 }
 .btn-add-dashed:hover {
-  background-color: rgba(0, 82, 204, 0.1); /* Se oscurece un pelín al pasar el ratón */
-  border-color: #0052cc; /* El borde se vuelve sólido/fuerte */
+  background-color: rgba(0, 82, 204, 0.1); 
+  border-color: #0052cc; 
 }
 
 /* Regla del botón logout (Mantiene su rojo corporativo) */
@@ -170,6 +170,12 @@ body {
   background-color: #ffffff;
   color: #172b4d;
 }
+
+/* Ocultar lupa en escritorio por defecto */
+.btn-search-mobile {
+  display: none;
+}
+
 /* --------------------------------------- */
 
 .toolbar {
@@ -535,7 +541,7 @@ body {
    9. MENÚ HAMBURGUESA Y RESPONSIVE (MÓVILES)
    ========================================== */
 
-/* Ocultar el botón en pantallas de escritorio */
+/* Ocultar elementos en escritorio por defecto */
 .btn-hamburger {
   display: none;
   background: none;
@@ -545,7 +551,6 @@ body {
   color: #0f172a;
   padding: 0;
 }
-/* Botón de cerrar sidebar (oculto por defecto en ordenador) */
 .btn-close-sidebar {
   display: none;
   background: none;
@@ -554,54 +559,107 @@ body {
   cursor: pointer;
   color: #5e6c84;
 }
+.mobile-logo {
+  display: none;
+}
+
 @media (max-width: 768px) {
   
-  /* 1. Cabecera limpia tipo App */
+  /* 1. Cabecera tipo App Nativa */
   .top-header {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; 
     align-items: center;
-    background-color: #ffffff;
+    justify-content: space-between; 
+    background-color: #0052cc; 
     padding: 1rem;
-    gap: 1rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: none; 
+    position: relative; 
   }
 
   .btn-hamburger {
     display: block;
-    order: -1; 
+    color: #ffffff; 
+    order: 1; 
   }
 
+  /* Logo en blanco y centrado absolutamente */
+  .mobile-logo {
+    display: block;
+    color: #ffffff;
+    font-size: 1.1rem; 
+    position: absolute;
+    top: 1.25rem; /* Ajuste para que quede alineado con los botones */
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    white-space: nowrap;
+    z-index: 2; 
+  }
+
+  /* Buscador en la parte derecha (Solo lupa) */
   .header-search {
-    flex-grow: 1; 
+    order: 2; 
+    width: auto; 
+    margin-top: 0; 
   }
+  
   .header-search input { 
-    width: 100%; 
-    box-sizing: border-box; 
+    display: none; /* Ocultamos el cuadro de texto blanco */
   }
 
-  /* 2. Contadores en forma de píldora */
+  /* Al añadir esta clase con JS, el buscador aparece flotando */
+  .header-search input.show-mobile {
+    display: block;
+    position: absolute;
+    top: 4rem; /* Se coloca justo debajo de la barra azul */
+    left: 1rem;
+    width: calc(100% - 2rem); /* Ocupa el ancho de la pantalla dejando un margen */
+    padding: 0.8rem;
+    border: 1px solid #dfe1e6;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    z-index: 50;
+  }
+
+  .btn-search-mobile {
+    display: block; /* Mostramos la lupa */
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  /* 2. Contadores (Tarjetas verticales) */
   .header-stats {
     width: 100%;
+    order: 3; /* Pasan debajo de la primera línea */
     display: flex;
     justify-content: space-between;
     gap: 0.5rem;
-    padding-top: 0.5rem;
+    padding-top: 1.2rem;
   }
 
   .stat-badge {
+    flex: 1; 
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
-    border-radius: 20px; 
-    padding: 0.4rem 0.8rem;
+    border-radius: 12px; 
+    padding: 0.6rem 0.2rem;
     font-size: 0.75rem;
     color: #475569;
     font-weight: 500;
   }
 
-  /* NUEVO: Arreglo para que los números no se queden blancos */
   .stat-badge b {
     color: #0f172a; 
+    font-size: 1rem;
+    margin-top: 0.2rem; 
   }
 
   /* 3. Menú Lateral Flotante (Off-Canvas) */
@@ -622,20 +680,18 @@ body {
     box-sizing: border-box;
   }
 
-  .sidebar-logo h2 { 
-    font-size: 1.2rem; 
-    text-align: center;
-    margin-bottom: 0.5rem;
-  }
-
   .btn-close-sidebar {
     display: block;
   }
   
   .sidebar-logo {
-    text-align: left; /* Quitamos el centrado para que conviva bien con la X */
+    text-align: left; 
   }
-  
+  .sidebar-logo h2 { 
+    font-size: 1.2rem; 
+    margin-bottom: 0.5rem;
+  }
+
   .sidebar-section {
     display: flex;
     flex-direction: column;
@@ -665,7 +721,6 @@ body {
     box-sizing: border-box;
   }
 
-  /* Mantenemos las tareas apiladas hacia abajo */
   .kanban-board {
     flex-direction: column;
     padding: 0 1rem 1rem 1rem;

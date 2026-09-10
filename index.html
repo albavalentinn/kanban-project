@@ -56,9 +56,10 @@
 
     <!-- EL CONTENEDOR PRINCIPAL -->
     <div class="app-container hidden" id="app-container">
+      
       <!-- 1. MENÚ LATERAL IZQUIERDO -->
       <aside class="sidebar">
-       <header class="sidebar-logo" style="display: flex; justify-content: space-between; align-items: center;">
+        <header class="sidebar-logo" style="display: flex; justify-content: space-between; align-items: center;">
           <h2 style="margin: 0;">GetOrganized</h2>
           <button id="btn-close-sidebar" class="btn-close-sidebar" aria-label="Cerrar menú">✖</button>
         </header>
@@ -80,29 +81,28 @@
 
       <!-- 2. CONTENIDO PRINCIPAL DERECHO -->
       <div class="main-content">
+        
         <header class="top-header">
-          <!-- Botón hamburguesa (solo visible en móvil mediante CSS) -->
-          <button
-            id="btn-hamburger"
-            class="btn-hamburger"
-            aria-label="Abrir menú"
-          >
+          <!-- 1. Botón hamburguesa -->
+          <button id="btn-hamburger" class="btn-hamburger" aria-label="Abrir menú">
             ☰
           </button>
+          
+          <!-- 2. Logo central (solo visible en móvil) -->
+          <h2 class="mobile-logo">GetOrganized</h2>
 
+          <!-- 3. Buscador -->
+          <div class="header-search">
+            <input type="text" id="search-input" placeholder="Buscar tareas..." />
+            <!-- NUEVO: Lupa para la versión móvil -->
+            <button id="btn-search-mobile" class="btn-search-mobile" aria-label="Buscar">🔍</button>
+          </div>
+
+          <!-- 4. Estadísticas (Las 3 píldoras) -->
           <div class="header-stats" id="stats-panel">
             <span class="stat-badge">Por Hacer: <b id="count-todo">0</b></span>
-            <span class="stat-badge"
-              >En Proceso: <b id="count-doing">0</b></span
-            >
+            <span class="stat-badge">En Proceso: <b id="count-doing">0</b></span>
             <span class="stat-badge">Finalizado: <b id="count-done">0</b></span>
-          </div>
-          <div class="header-search">
-            <input
-              type="text"
-              id="search-input"
-              placeholder="Buscar tareas..."
-            />
           </div>
         </header>
 
