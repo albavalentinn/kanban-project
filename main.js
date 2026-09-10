@@ -764,3 +764,51 @@ if (btnNextMonth) {
         renderCalendar();
     });
 }
+
+// ==========================================
+// 11. COLUMNAS COLAPSABLES (ACORDEÓN)
+// ==========================================
+function habilitarColumnasColapsables() {
+    const columnas = document.querySelectorAll('.kanban-column');
+    
+    columnas.forEach(columna => {
+        const header = columna.querySelector('.column-header');
+        const taskList = columna.querySelector('.task-list');
+        
+        // Verificamos que exista el header y la lista para evitar errores
+        if (!header || !taskList) return;
+
+        // Preparamos el header para que alinee el título a la izquierda y la flecha a la derecha
+        header.style.display = 'flex';
+        header.style.justifyContent = 'space-between';
+        header.style.alignItems = 'center';
+        header.style.cursor = 'pointer'; // Cambia el cursor para indicar que se puede hacer clic
+        header.title = "Haz clic para plegar o desplegar la columna";
+        
+        // Creamos el icono de la flecha
+        const iconoFlecha = document.createElement('span');
+        iconoFlecha.innerHTML = '▼'; // Flecha hacia abajo
+        iconoFlecha.style.transition = 'transform 0.3s ease'; // Animación suave al rotar
+        iconoFlecha.style.fontSize = '1.2rem';
+        iconoFlecha.style.color = '#5e6c84';
+        
+        // Añadimos la flecha al lado del título
+        header.appendChild(iconoFlecha);
+
+        // Añadimos la acción: ¿qué pasa al tocar el header?
+        header.addEventListener('click', () => {
+            // Alternamos la clase .hidden de tu CSS para ocultar/mostrar las tareas
+            taskList.classList.toggle('hidden');
+            
+            // Rotamos la flechita para que apunte a un lado si está cerrado, y abajo si está abierto
+            if (taskList.classList.contains('hidden')) {
+                iconoFlecha.style.transform = 'rotate(-90deg)'; 
+            } else {
+                iconoFlecha.style.transform = 'rotate(0deg)'; 
+            }
+        });
+    });
+}
+
+// Ejecutamos la función para que las flechas aparezcan nada más cargar la página
+habilitarColumnasColapsables();
