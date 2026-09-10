@@ -1,7 +1,7 @@
-const API_URL = 'http://localhost:3000/tasks';
-const API_PROJECTS = 'http://localhost:3000/projects';
-const API_USERS = 'http://localhost:3000/users';
-const API_COMMENTS = 'http://localhost:3000/comments'; 
+const API_URL = 'https://api-getorganized.onrender.com/tasks';
+const API_PROJECTS = 'https://api-getorganized.onrender.com/projects';
+const API_USERS = 'https://api-getorganized.onrender.com/users';
+const API_COMMENTS = 'https://api-getorganized.onrender.com/comments';
 
 let allTasks = []; 
 let allProjects = []; 
