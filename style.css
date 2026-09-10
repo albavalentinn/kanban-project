@@ -541,21 +541,26 @@ body {
     z-index: 2; 
   }
 
-  .header-search { order: 2; width: auto; margin-top: 0; }
+  /* --- INICIO DE LA CORRECCIÓN DEL BUSCADOR --- */
+  .header-search { order: 2; width: 100%; margin-top: 0; }
   .header-search input { display: none; }
   
   .header-search input.show-mobile {
     display: block;
-    position: absolute;
-    top: 4rem; 
-    left: 1rem;
-    width: calc(100% - 2rem); 
+    position: relative; 
+    top: 0; 
+    left: 0;
+    width: 100%; 
     padding: 0.8rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
     border: 1px solid #dfe1e6;
     border-radius: 8px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-sizing: border-box;
     z-index: 50;
   }
+  /* --- FIN DE LA CORRECCIÓN --- */
 
   .btn-search-mobile {
     display: block; 
