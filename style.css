@@ -543,18 +543,27 @@ body {
   }
 
   /* --- INICIO DE LA CORRECCIÓN DEFINITIVA DEL BUSCADOR --- */
-  .btn-search-mobile {
-    display: block; 
-    position: absolute; /* Lo anclamos en la esquina superior derecha */
-    top: 1rem;
-    right: 1rem;
+ .btn-search-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 1.25rem; /* Alineado perfectamente con el título y el menú */
+    right: 1.5rem; /* Un poco más de margen para respirar */
     background: none;
     border: none;
-    font-size: 1.3rem;
     color: #ffffff;
     cursor: pointer;
     padding: 0;
     z-index: 10;
+    outline: none; /* Elimina el borde naranja horrible del navegador */
+    -webkit-tap-highlight-color: transparent; /* Elimina el destello azul/gris al tocar en móviles */
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .btn-search-mobile:active {
+    transform: scale(0.9);
+    opacity: 0.8;
   }
 
   .header-search { 
