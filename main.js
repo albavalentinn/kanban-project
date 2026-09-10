@@ -587,17 +587,24 @@ comprobarSesion();
 // ==========================================
 const btnHamburger = document.getElementById('btn-hamburger');
 const sidebar = document.querySelector('.sidebar');
+const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 
 if (btnHamburger && sidebar) {
-    // Abrir el menú al tocar la hamburguesa
+    // Abrir el menú
     btnHamburger.addEventListener('click', (e) => {
-        e.stopPropagation(); // Evita que el clic se propague al resto del documento
-        sidebar.classList.toggle('open');
+        e.stopPropagation();
+        sidebar.classList.add('open');
     });
 
-    // Cerrar el menú si tocamos en cualquier parte fuera del sidebar
+    // Cerrar el menú con la X
+    if (btnCloseSidebar) {
+        btnCloseSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+        });
+    }
+
+    // (Opcional) Mantenemos también el cierre al tocar fuera por comodidad
     document.addEventListener('click', (e) => {
-        // Si el menú está abierto Y el clic NO ha sido dentro del sidebar
         if (sidebar.classList.contains('open') && !sidebar.contains(e.target)) {
             sidebar.classList.remove('open');
         }

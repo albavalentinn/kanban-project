@@ -545,7 +545,15 @@ body {
   color: #0f172a;
   padding: 0;
 }
-
+/* Botón de cerrar sidebar (oculto por defecto en ordenador) */
+.btn-close-sidebar {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #5e6c84;
+}
 @media (max-width: 768px) {
   
   /* 1. Cabecera limpia tipo App */
@@ -620,6 +628,14 @@ body {
     margin-bottom: 0.5rem;
   }
 
+  .btn-close-sidebar {
+    display: block;
+  }
+  
+  .sidebar-logo {
+    text-align: left; /* Quitamos el centrado para que conviva bien con la X */
+  }
+  
   .sidebar-section {
     display: flex;
     flex-direction: column;
