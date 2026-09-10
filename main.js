@@ -581,3 +581,25 @@ btnCloseTaskView.addEventListener('click', () => {
 // ARRANQUE INICIAL
 initSortable(); 
 comprobarSesion();
+
+// ==========================================
+// 7. MENÚ HAMBURGUESA (MÓVIL)
+// ==========================================
+const btnHamburger = document.getElementById('btn-hamburger');
+const sidebar = document.querySelector('.sidebar');
+
+if (btnHamburger && sidebar) {
+    // Abrir el menú al tocar la hamburguesa
+    btnHamburger.addEventListener('click', (e) => {
+        e.stopPropagation(); // Evita que el clic se propague al resto del documento
+        sidebar.classList.toggle('open');
+    });
+
+    // Cerrar el menú si tocamos en cualquier parte fuera del sidebar
+    document.addEventListener('click', (e) => {
+        // Si el menú está abierto Y el clic NO ha sido dentro del sidebar
+        if (sidebar.classList.contains('open') && !sidebar.contains(e.target)) {
+            sidebar.classList.remove('open');
+        }
+    });
+}

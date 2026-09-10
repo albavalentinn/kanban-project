@@ -349,7 +349,7 @@ body {
   margin-top: 1rem;
 }
 
-/* MODAL DE ADMINISTRAR PROYECTOS (Mantenemos clases modales base por si acaso) */
+/* MODAL DE ADMINISTRAR PROYECTOS */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -531,92 +531,161 @@ body {
 .dot.blue { background: #0065ff; }
 .dot.green { background: #36b37e; }
 
-/* =========================================
-   9. ADAPTACIÓN A MÓVILES (RESPONSIVE DESIGN)
-   ========================================= */
-@media (max-width: 768px) {
-    .app-container { flex-direction: column; }
+/* ==========================================
+   9. MENÚ HAMBURGUESA Y RESPONSIVE (MÓVILES)
+   ========================================== */
 
-    .sidebar {
-        width: 100%;
-        padding: 1rem;
-        gap: 0.8rem;
-        border-bottom: 1px solid #e1e4e8; 
-        box-sizing: border-box;
-    }
-    .sidebar-logo h2 { 
-        font-size: 1.2rem; 
-        text-align: center;
-        margin-bottom: 0.5rem;
-    }
-    .sidebar-section {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    .btn-text, .btn-add-dashed { margin-top: 0; }
-
-    .top-header {
-        padding: 1rem;
-        flex-direction: column;
-        gap: 1rem;
-        box-sizing: border-box;
-    }
-    .header-stats {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: center;
-        width: 100%;
-    }
-    .header-search { width: 100%; }
-    .header-search input { width: 100%; box-sizing: border-box; }
-
-    .toolbar {
-        padding: 1rem;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 1rem;
-        box-sizing: border-box;
-    }
-
-    .kanban-board {
-        padding: 1rem; 
-        flex-direction: column; 
-        overflow-x: hidden; 
-        gap: 2rem; 
-        box-sizing: border-box;
-    }
-    
-    .kanban-column {
-        width: 100%; 
-        min-width: auto;
-        padding: 1rem;
-        box-sizing: border-box;
-    }
-
-    .task-card {
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .card-footer {
-        flex-wrap: wrap; 
-        gap: 0.8rem;
-    }
-
-    .list-header { display: none; }
-    .list-row { 
-        grid-template-columns: 1fr; 
-        gap: 0.8rem; 
-    }
-    .list-row-title p { white-space: normal; }
-
-    .modal {
-        width: 90%;
-        padding: 1.5rem;
-        box-sizing: border-box;
-    }
+/* Ocultar el botón en pantallas de escritorio */
+.btn-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #0f172a;
+  padding: 0;
 }
 
+@media (max-width: 768px) {
+  
+  /* 1. Cabecera limpia tipo App */
+  .top-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 1rem;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
 
+  .btn-hamburger {
+    display: block;
+    order: -1; 
+  }
+
+  .header-search {
+    flex-grow: 1; 
+  }
+  .header-search input { 
+    width: 100%; 
+    box-sizing: border-box; 
+  }
+
+  /* 2. Contadores en forma de píldora */
+  .header-stats {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .stat-badge {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px; 
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    color: #475569;
+    font-weight: 500;
+  }
+
+  /* NUEVO: Arreglo para que los números no se queden blancos */
+  .stat-badge b {
+    color: #0f172a; 
+  }
+
+  /* 3. Menú Lateral Flotante (Off-Canvas) */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: -100%; 
+    width: 80%;
+    max-width: 320px;
+    height: 100vh;
+    background: #ffffff;
+    z-index: 1000;
+    box-shadow: 10px 0 25px rgba(0,0,0,0.1); 
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    padding: 1.5rem;
+    box-sizing: border-box;
+  }
+
+  .sidebar-logo h2 { 
+    font-size: 1.2rem; 
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .sidebar.open {
+    left: 0; 
+  }
+
+  /* 4. Estructura general de la App en móvil */
+  .app-container {
+    display: block; 
+    height: auto; 
+    overflow-y: visible; 
+  }
+
+  .main-content {
+    padding: 0; 
+  }
+
+  .toolbar {
+    padding: 1rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-sizing: border-box;
+  }
+
+  /* Mantenemos las tareas apiladas hacia abajo */
+  .kanban-board {
+    flex-direction: column;
+    padding: 0 1rem 1rem 1rem;
+    overflow-x: hidden; 
+    gap: 2rem; 
+    box-sizing: border-box;
+  }
+
+  .kanban-column {
+    width: 100%; 
+    min-width: auto;
+    padding: 1rem;
+    box-sizing: border-box;
+    margin-bottom: 1.5rem;
+  }
+
+  .task-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .card-footer {
+    flex-wrap: wrap; 
+    gap: 0.8rem;
+  }
+
+  .list-header { display: none; }
+  .list-row { 
+    grid-template-columns: 1fr; 
+    gap: 0.8rem; 
+  }
+  .list-row-title p { white-space: normal; }
+
+  .modal {
+    width: 90%;
+    padding: 1.5rem;
+    box-sizing: border-box;
+  }
+}

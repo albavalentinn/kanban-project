@@ -10,8 +10,8 @@
   </head>
   <body>
     <!-- 0. PANTALLA DE LOGIN / REGISTRO -->
-    <div id="auth-container" class="auth-container">
-      <div class="auth-card">
+    <section id="auth-container" class="auth-container">
+      <article class="auth-card">
         <h1
           class="logo"
           style="text-align: center; margin-bottom: 2rem; color: #0052cc"
@@ -51,18 +51,18 @@
           <span id="auth-switch-text">¿No tienes cuenta?</span>
           <a href="#" id="auth-switch-link">Regístrate aquí</a>
         </p>
-      </div>
-    </div>
+      </article>
+    </section>
 
     <!-- EL CONTENEDOR PRINCIPAL -->
     <div class="app-container hidden" id="app-container">
       <!-- 1. MENÚ LATERAL IZQUIERDO -->
       <aside class="sidebar">
-        <div class="sidebar-logo">
+        <header class="sidebar-logo">
           <h2>GetOrganized</h2>
-        </div>
+        </header>
 
-        <div class="sidebar-section">
+        <nav class="sidebar-section" aria-label="Espacios de Trabajo">
           <span class="section-title">ESPACIOS DE TRABAJO</span>
 
           <!-- Lista de proyectos -->
@@ -74,12 +74,21 @@
           <button id="btn-add-project" class="btn-add-dashed">
             + Añadir Proyecto
           </button>
-        </div>
+        </nav>
       </aside>
 
       <!-- 2. CONTENIDO PRINCIPAL DERECHO -->
       <div class="main-content">
         <header class="top-header">
+          <!-- Botón hamburguesa (solo visible en móvil mediante CSS) -->
+          <button
+            id="btn-hamburger"
+            class="btn-hamburger"
+            aria-label="Abrir menú"
+          >
+            ☰
+          </button>
+
           <div class="header-stats" id="stats-panel">
             <span class="stat-badge">Por Hacer: <b id="count-todo">0</b></span>
             <span class="stat-badge"
@@ -96,7 +105,7 @@
           </div>
         </header>
 
-        <div class="toolbar">
+        <section class="toolbar" aria-label="Controles de vista">
           <div class="toolbar-tabs">
             <button class="tab active">Tablero Kanban</button>
             <button class="tab">Lista</button>
@@ -104,20 +113,22 @@
           <button id="btn-create-task" class="btn-primary">
             + Nueva Tarea
           </button>
-        </div>
+        </section>
 
         <!-- TABLERO KANBAN -->
         <main class="kanban-board">
           <section class="kanban-column" data-status="todo">
-            <div class="column-header"><h2>Por Hacer</h2></div>
+            <header class="column-header"><h2>Por Hacer</h2></header>
             <div class="task-list" id="todo-list"></div>
           </section>
+
           <section class="kanban-column" data-status="doing">
-            <div class="column-header"><h2>En Proceso</h2></div>
+            <header class="column-header"><h2>En Proceso</h2></header>
             <div class="task-list" id="doing-list"></div>
           </section>
+
           <section class="kanban-column" data-status="done">
-            <div class="column-header"><h2>Finalizado</h2></div>
+            <header class="column-header"><h2>Finalizado</h2></header>
             <div class="task-list" id="done-list"></div>
           </section>
         </main>
@@ -125,7 +136,7 @@
         <!-- VISTA DE LISTA -->
         <section id="list-board" class="list-board hidden">
           <!-- FILTROS DE PRIORIDAD -->
-          <div class="list-filters">
+          <nav class="list-filters" aria-label="Filtros de prioridad">
             <button class="filter-btn active" data-priority="all">Todas</button>
             <button class="filter-btn" data-priority="Alta">
               <span class="dot red"></span> Alta
@@ -136,14 +147,16 @@
             <button class="filter-btn" data-priority="Baja">
               <span class="dot green"></span> Baja
             </button>
-          </div>
-          <div class="list-header">
+          </nav>
+
+          <header class="list-header">
             <span>Tarea</span>
             <span>Prioridad</span>
             <span>Fecha Límite</span>
             <span>Estado</span>
             <span>Acciones</span>
-          </div>
+          </header>
+
           <div class="list-content" id="list-content">
             <!-- Las tareas en formato fila se inyectarán aquí con JS -->
           </div>
@@ -178,14 +191,14 @@
 
     <!-- MODAL ÚNICO: VISTA, EDICIÓN Y COMENTARIOS -->
     <dialog id="modal-task-view" class="modal">
-      <div class="modal-header">
+      <header class="modal-header">
         <h3>Panel de Tarea</h3>
         <button type="button" id="btn-close-task-view" class="btn-close">
           ✖
         </button>
-      </div>
+      </header>
 
-      <div
+      <section
         class="modal-body"
         style="
           display: flex;
@@ -285,7 +298,7 @@
         />
 
         <!-- Comentarios -->
-        <div class="comments-section">
+        <section class="comments-section">
           <h4 style="margin-bottom: 0.8rem; color: #0f172a">
             💬 Comentarios del equipo
           </h4>
@@ -300,6 +313,7 @@
               overflow-y: auto;
             "
           ></ul>
+
           <form id="form-add-comment" style="display: flex; gap: 0.5rem">
             <input
               type="text"
@@ -310,8 +324,8 @@
             />
             <button type="submit" class="btn-primary">Enviar</button>
           </form>
-        </div>
-      </div>
+        </section>
+      </section>
     </dialog>
 
     <script src="main.js"></script>
