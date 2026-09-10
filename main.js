@@ -116,28 +116,11 @@ function comprobarSesion() {
 
 // ==========================================
 // 2. GESTIÓN DE VISTAS (TABLERO VS LISTA)
+// (Manejado por el sistema de pestañas en la sección 10)
 // ==========================================
-const btnKanban = document.querySelectorAll('.toolbar-tabs .tab')[0];
-const btnList = document.querySelectorAll('.toolbar-tabs .tab')[1];
-const boardKanban = document.querySelector('.kanban-board');
-const boardList = document.getElementById('list-board');
-
-btnKanban.addEventListener('click', () => {
-    btnKanban.classList.add('active');
-    btnList.classList.remove('active');
-    boardKanban.classList.remove('hidden');
-    boardList.classList.add('hidden');
-});
-
-btnList.addEventListener('click', () => {
-    btnList.classList.add('active');
-    btnKanban.classList.remove('active');
-    boardList.classList.remove('hidden');
-    boardKanban.classList.add('hidden');
-});
-
 function renderList(tasks) {
     const listContent = document.getElementById('list-content');
+    if(!listContent) return;
     listContent.innerHTML = '';
     
     tasks.forEach(task => {
@@ -171,7 +154,7 @@ function renderList(tasks) {
 }
 
 // ==========================================
-// 3. GESTIÓN DE PROYECTOS DIRECTA EN LISTA
+// 3. GESTIÓN DE PROYECTOS
 // ==========================================
 async function loadProjects() {
     try {
@@ -184,7 +167,11 @@ async function loadProjects() {
             projectList.innerHTML = '<li style="color: #6b778c; font-size: 0.9rem;">Sin proyectos</li>';
             currentProjectId = null;
             localStorage.removeItem('kanban_project');
-            renderTasks([]); renderList([]); return;
+            renderTasks([]); renderList([]); 
+            if(document.getElementById('calendar-board') && !document.getElementById('calendar-board').classList.contains('hidden')){
+                renderCalendar(); 
+            }
+            return;
         }
 
         if (!currentProjectId) {
@@ -316,7 +303,14 @@ window.deleteProject = async function(id) {
 // ==========================================
 async function getTasks() {
     try {
-        if (!currentProjectId) { renderTasks([]); renderList([]); return; }
+        if (!currentProjectId) { 
+            renderTasks([]); 
+            renderList([]); 
+            if(document.getElementById('calendar-board') && !document.getElementById('calendar-board').classList.contains('hidden')){
+                renderCalendar(); 
+            }
+            return; 
+        }
 
         const response = await fetch(`${API_URL}?projectId=${currentProjectId}&_embed=comments`);
         allTasks = await response.json(); 
@@ -345,6 +339,10 @@ async function getTasks() {
             listTasks = finalTasks.filter(task => task.priority === currentPriorityFilter);
         }
         renderList(listTasks); 
+        
+        if(document.getElementById('calendar-board') && !document.getElementById('calendar-board').classList.contains('hidden')){
+            renderCalendar(); 
+        }
         
     } catch (error) { console.error("Error al cargar tareas:", error); }
 }
@@ -466,7 +464,6 @@ window.openTaskViewModal = function(taskId) {
     const task = allTasks.find(t => t.id === taskId);
     if (!task) return;
     
-    // Aseguramos que se actualice siempre el ID de la tarea activa al abrir el modal
     currentViewTaskId = task.id;
 
     document.getElementById('edit-task-id').value = task.id;
@@ -590,20 +587,17 @@ const sidebar = document.querySelector('.sidebar');
 const btnCloseSidebar = document.getElementById('btn-close-sidebar');
 
 if (btnHamburger && sidebar) {
-    // Abrir el menú
     btnHamburger.addEventListener('click', (e) => {
         e.stopPropagation();
         sidebar.classList.add('open');
     });
 
-    // Cerrar el menú con la X
     if (btnCloseSidebar) {
         btnCloseSidebar.addEventListener('click', () => {
             sidebar.classList.remove('open');
         });
     }
 
-    // (Opcional) Mantenemos también el cierre al tocar fuera por comodidad
     document.addEventListener('click', (e) => {
         if (sidebar.classList.contains('open') && !sidebar.contains(e.target)) {
             sidebar.classList.remove('open');
@@ -618,21 +612,146 @@ const btnSearchMobile = document.getElementById('btn-search-mobile');
 const searchInput = document.getElementById('search-input');
 
 if (btnSearchMobile && searchInput) {
-    // Abrir/cerrar el buscador al tocar la lupa
     btnSearchMobile.addEventListener('click', (e) => {
-        e.stopPropagation(); // Evita que se cierre instantáneamente
+        e.stopPropagation(); 
         searchInput.classList.toggle('show-mobile');
         
-        // Magia UX: Si se ha abierto, ponemos el cursor dentro automáticamente
         if (searchInput.classList.contains('show-mobile')) {
             searchInput.focus(); 
         }
     });
 
-    // Cerrar el buscador al tocar cualquier otra parte de la pantalla
     document.addEventListener('click', (e) => {
         if (searchInput.classList.contains('show-mobile') && e.target !== searchInput) {
             searchInput.classList.remove('show-mobile');
         }
+    });
+}
+
+// ==========================================
+// 10. CALENDARIO Y CAMBIO DE VISTAS
+// ==========================================
+const tabs = document.querySelectorAll('.toolbar-tabs .tab');
+const kanbanView = document.querySelector('.kanban-board');
+const listView = document.getElementById('list-board');
+const calendarView = document.getElementById('calendar-board');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        kanbanView.classList.add('hidden');
+        if(listView) listView.classList.add('hidden');
+        if(calendarView) calendarView.classList.add('hidden');
+
+        const target = tab.getAttribute('data-target');
+        if (target === 'kanban') kanbanView.classList.remove('hidden');
+        if (target === 'list' && listView) listView.classList.remove('hidden');
+        if (target === 'calendar' && calendarView) {
+            calendarView.classList.remove('hidden');
+            renderCalendar(); 
+        }
+    });
+});
+
+let currentDate = new Date(); 
+
+function renderCalendar() {
+    const calendarDays = document.getElementById('calendar-days');
+    const monthYearText = document.getElementById('calendar-month-year');
+    if (!calendarDays || !monthYearText) return;
+
+    calendarDays.innerHTML = ''; 
+
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    monthYearText.textContent = `${monthNames[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const totalDays = lastDay.getDate();
+
+    let startDayIndex = firstDay.getDay() - 1;
+    if (startDayIndex === -1) startDayIndex = 6; 
+
+    for (let i = 0; i < startDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day-cell empty';
+        calendarDays.appendChild(emptyCell);
+    }
+
+    const allTaskCards = document.querySelectorAll('.task-card');
+    const tasksByDate = {}; 
+
+    allTaskCards.forEach(card => {
+        const dateEl = card.querySelector('.date');
+        if (dateEl) {
+            const dateStr = dateEl.textContent.replace(/[^\d-]/g, '').trim(); 
+            if (dateStr) {
+                if (!tasksByDate[dateStr]) tasksByDate[dateStr] = [];
+                
+                const title = card.querySelector('h3').textContent;
+                const id = card.getAttribute('data-id'); // Capturamos el ID
+                
+                let priority = 'baja';
+                if (card.querySelector('.alta')) priority = 'alta';
+                else if (card.querySelector('.media')) priority = 'media';
+
+                tasksByDate[dateStr].push({ id, title, priority }); // Guardamos el ID
+            }
+        }
+    });
+
+    const realToday = new Date(); 
+
+    for (let day = 1; day <= totalDays; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'calendar-day-cell';
+
+        const dayNumber = document.createElement('span');
+        dayNumber.className = 'calendar-day-number';
+        dayNumber.textContent = day;
+        cell.appendChild(dayNumber);
+
+        if (year === realToday.getFullYear() && month === realToday.getMonth() && day === realToday.getDate()) {
+            cell.classList.add('today');
+        }
+
+        const cellDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        if (tasksByDate[cellDateStr]) {
+            tasksByDate[cellDateStr].forEach(task => {
+                const taskEl = document.createElement('div');
+                taskEl.className = `calendar-task ${task.priority}`; 
+                taskEl.textContent = task.title;
+                
+                // Hacemos que la tarea sea clicable
+                taskEl.onclick = () => window.openTaskViewModal(task.id);
+                
+                cell.appendChild(taskEl);
+            });
+        }
+
+        calendarDays.appendChild(cell);
+    }
+}
+
+const btnPrevMonth = document.getElementById('btn-prev-month');
+const btnNextMonth = document.getElementById('btn-next-month');
+
+if (btnPrevMonth) {
+    btnPrevMonth.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar();
+    });
+}
+
+if (btnNextMonth) {
+    btnNextMonth.addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
     });
 }

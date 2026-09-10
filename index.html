@@ -106,10 +106,12 @@
           </div>
         </header>
 
-        <section class="toolbar" aria-label="Controles de vista">
+      <section class="toolbar" aria-label="Controles de vista">
           <div class="toolbar-tabs">
-            <button class="tab active">Tablero Kanban</button>
-            <button class="tab">Lista</button>
+            <button class="tab active" data-target="kanban">Tablero Kanban</button>
+            <button class="tab" data-target="list">Lista</button>
+            <!-- NUEVA PESTAÑA: -->
+            <button class="tab" data-target="calendar">Calendario</button>
           </div>
           <button id="btn-create-task" class="btn-primary">
             + Nueva Tarea
@@ -161,6 +163,24 @@
           <div class="list-content" id="list-content">
             <!-- Las tareas en formato fila se inyectarán aquí con JS -->
           </div>
+        </section>
+        <!-- VISTA DE CALENDARIO -->
+        <section id="calendar-board" class="calendar-board hidden">
+          
+          <header class="calendar-header">
+            <button id="btn-prev-month" class="btn-secondary">◀ Anterior</button>
+            <h2 id="calendar-month-year">Septiembre 2026</h2>
+            <button id="btn-next-month" class="btn-secondary">Siguiente ▶</button>
+          </header>
+
+          <div class="calendar-container">
+            <div class="calendar-weekdays">
+              <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+            </div>
+            <!-- Los días y tareas se inyectarán aquí con JavaScript -->
+            <div class="calendar-days" id="calendar-days"></div>
+          </div>
+          
         </section>
       </div>
     </div>

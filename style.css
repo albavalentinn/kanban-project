@@ -36,7 +36,6 @@ body {
   font-size: 1.5rem;
 }
 
-/* Títulos de sección (como ESPACIOS DE TRABAJO) */
 .section-title {
   font-size: 0.85rem;
   color: #090b0f; 
@@ -80,7 +79,6 @@ body {
   font-weight: bold;
 }
 
-/* Botones de acción laterales (Cerrar Sesión) */
 .btn-text {
   background: none;
   border: none;
@@ -101,7 +99,6 @@ body {
   color: #172b4d; 
 }
 
-/* ESTILO BOTÓN AÑADIR PROYECTO (DASHED) */
 .btn-add-dashed {
   display: flex;
   justify-content: center;
@@ -125,13 +122,8 @@ body {
   border-color: #0052cc; 
 }
 
-/* Regla del botón logout (Mantiene su rojo corporativo) */
-#btn-logout {
-  color: #bf2600 !important; 
-}
-#btn-logout:hover {
-  color: #9e2000 !important;
-}
+#btn-logout { color: #bf2600 !important; }
+#btn-logout:hover { color: #9e2000 !important; }
 
 /* --- Contenido Principal Derecho --- */
 .main-content {
@@ -142,7 +134,6 @@ body {
   background-color: #ffffff;
 }
 
-/* --- CABECERA AZUL CORPORATIVA --- */
 .top-header {
   display: flex;
   justify-content: space-between;
@@ -170,13 +161,9 @@ body {
   background-color: #ffffff;
   color: #172b4d;
 }
-
-/* Ocultar lupa en escritorio por defecto */
 .btn-search-mobile {
   display: none;
 }
-
-/* --------------------------------------- */
 
 .toolbar {
   display: flex;
@@ -263,21 +250,10 @@ body {
   border-radius: 12px;
   font-weight: bold;
 }
-.alta {
-  background-color: #ffebe6;
-  color: #bf2600;
-}
-.media {
-  background-color: #fff0b3;
-  color: #ff8b00;
-}
-.baja {
-  background-color: #e3fcef;
-  color: #006644;
-}
-.date {
-  color: #5e6c84;
-}
+.alta { background-color: #ffebe6; color: #bf2600; }
+.media { background-color: #fff0b3; color: #ff8b00; }
+.baja { background-color: #e3fcef; color: #006644; }
+.date { color: #5e6c84; }
 
 /* =========================================
    5. BOTONES Y MODALES
@@ -292,9 +268,7 @@ body {
   cursor: pointer;
   transition: background-color 0.2s;
 }
-.btn-primary:hover {
-  background-color: #0047b3;
-}
+.btn-primary:hover { background-color: #0047b3; }
 .btn-secondary {
   background-color: transparent;
   color: #0000007a;
@@ -303,10 +277,7 @@ body {
   font-weight: bold;
   cursor: pointer;
 }
-.btn-secondary:hover {
-  background-color: #ebecf0;
-  border-radius: 6px;
-}
+.btn-secondary:hover { background-color: #ebecf0; border-radius: 6px; }
 
 .modal {
   border: none;
@@ -315,24 +286,10 @@ body {
   width: 400px;
   box-shadow: 0 8px 16px rgba(9, 30, 66, 0.25);
 }
-.modal::backdrop {
-  background-color: rgba(9, 30, 66, 0.54);
-}
-.modal form {
-  display: flex;
-  flex-direction: column;
-}
-.modal h3 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  color: #172b4d;
-}
-.modal label {
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #5e6c84;
-  margin-bottom: 0.4rem;
-}
+.modal::backdrop { background-color: rgba(9, 30, 66, 0.54); }
+.modal form { display: flex; flex-direction: column; }
+.modal h3 { margin-top: 0; margin-bottom: 1.5rem; color: #172b4d; }
+.modal label { font-size: 0.9rem; font-weight: bold; color: #5e6c84; margin-bottom: 0.4rem; }
 .modal input,
 .modal textarea,
 .modal select {
@@ -342,36 +299,11 @@ body {
   border-radius: 4px;
   font-size: 1rem;
 }
-.modal input:focus,
-.modal textarea:focus,
-.modal select:focus {
-  border-color: #4c9aff;
-  outline: none;
-}
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-/* MODAL DE ADMINISTRAR PROYECTOS */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-.modal-header h3 {
-  margin: 0;
-}
-.btn-close {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  color: #5e6c84;
-}
+.modal input:focus, .modal textarea:focus, .modal select:focus { border-color: #4c9aff; outline: none; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.modal-header h3 { margin: 0; }
+.btn-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #5e6c84; }
 
 /* =========================================
    6. VISTA DE LISTA Y UTILIDADES
@@ -392,12 +324,7 @@ body {
   font-size: 0.85rem;
   text-transform: uppercase;
 }
-.list-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 0.5rem;
-}
+.list-content { display: flex; flex-direction: column; gap: 0.5rem; padding-top: 0.5rem; }
 .list-row {
   display: grid;
   grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
@@ -409,14 +336,8 @@ body {
   font-size: 0.9rem;
   transition: background-color 0.2s;
 }
-.list-row:hover {
-  background-color: #fafbfc;
-}
-.list-row-title h4 {
-  margin: 0 0 0.2rem 0;
-  color: #172b4d;
-  font-size: 1rem;
-}
+.list-row:hover { background-color: #fafbfc; }
+.list-row-title h4 { margin: 0 0 0.2rem 0; color: #172b4d; font-size: 1rem; }
 .list-row-title p {
   margin: 0;
   font-size: 0.8rem;
@@ -426,46 +347,16 @@ body {
   text-overflow: ellipsis;
   max-width: 90%;
 }
-
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 /* =========================================
    7. SISTEMA DE USUARIOS (LOGIN / REGISTRO)
    ========================================= */
-.auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f4f5f7;
-}
-.auth-card {
-  background: white;
-  padding: 3rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(9, 30, 66, 0.15);
-  width: 100%;
-  max-width: 350px;
-}
-.auth-card h2 {
-  margin-top: 0;
-  color: #172b4d;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-.auth-card form {
-  display: flex;
-  flex-direction: column;
-}
-
-.auth-card form label {
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #5e6c84;
-  margin-bottom: 0.5rem;
-}
+.auth-container { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f5f7; }
+.auth-card { background: white; padding: 3rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(9, 30, 66, 0.15); width: 100%; max-width: 350px; }
+.auth-card h2 { margin-top: 0; color: #172b4d; margin-bottom: 2rem; text-align: center; }
+.auth-card form { display: flex; flex-direction: column; }
+.auth-card form label { font-size: 0.9rem; font-weight: bold; color: #5e6c84; margin-bottom: 0.5rem; }
 .auth-card form input {
   margin-bottom: 1.5rem; 
   padding: 0.8rem; 
@@ -475,40 +366,16 @@ body {
   box-sizing: border-box; 
   transition: border-color 0.2s;
 }
-.auth-card form input:focus {
-  border-color: #0052cc;
-  outline: none;
-}
-
-.auth-switch {
-  text-align: center;
-  margin-top: 1.5rem;
-  font-size: 0.9rem;
-  color: #5e6c84;
-}
-.auth-switch a {
-  color: #0052cc;
-  text-decoration: none;
-  font-weight: bold;
-}
-.auth-switch a:hover {
-  text-decoration: underline;
-}
-
-.text-strikethrough {
-    text-decoration: line-through;
-    color: #a5adba !important;
-}
+.auth-card form input:focus { border-color: #0052cc; outline: none; }
+.auth-switch { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #5e6c84; }
+.auth-switch a { color: #0052cc; text-decoration: none; font-weight: bold; }
+.auth-switch a:hover { text-decoration: underline; }
+.text-strikethrough { text-decoration: line-through; color: #a5adba !important; }
 
 /* =========================================
    8. FILTROS DE LISTA
    ========================================= */
-.list-filters {
-    display: flex;
-    gap: 0.8rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-}
+.list-filters { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
 .filter-btn {
     background: #ffffff;
     border: 1px solid #dfe1e6;
@@ -523,49 +390,131 @@ body {
     gap: 0.4rem;
     transition: all 0.2s ease;
 }
-.filter-btn.active, .filter-btn:hover {
-    background: #ebecf0;
-    border-color: #0052cc;
-    color: #0052cc;
-}
-.filter-btn .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
+.filter-btn.active, .filter-btn:hover { background: #ebecf0; border-color: #0052cc; color: #0052cc; }
+.filter-btn .dot { width: 8px; height: 8px; border-radius: 50%; }
 .dot.red { background: #ff5630; }
 .dot.blue { background: #0065ff; }
 .dot.green { background: #36b37e; }
 
+/* =========================================
+   10. VISTA DE CALENDARIO
+   ========================================= */
+.calendar-board {
+  padding: 0 2rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.1);
+}
+
+.calendar-header h2 {
+  margin: 0;
+  color: #172b4d;
+  font-size: 1.2rem;
+  text-transform: capitalize;
+}
+
+.calendar-container {
+  background: #dfe1e6;
+  border: 1px solid #dfe1e6;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #f4f5f7;
+  font-weight: bold;
+  color: #5e6c84;
+  text-align: center;
+  padding: 0.8rem 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 120px; /* Filas simétricas rígidas */
+  gap: 1px; 
+  background: #dfe1e6; 
+}
+
+.calendar-day-cell {
+  background: white;
+  height: 100%; 
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  overflow-y: auto; /* Permite scroll interno si hay muchas tareas */
+}
+
+/* Ocultar barra de scroll en las celdas */
+.calendar-day-cell::-webkit-scrollbar {
+  display: none;
+}
+
+.calendar-day-cell.empty { background: #fafbfc; }
+
+.calendar-day-number {
+  font-weight: bold;
+  color: #42526e;
+  align-self: flex-end;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+/* Resaltar el día actual (Hoy) */
+.calendar-day-cell.today { background-color: #f4f9ff; }
+.calendar-day-cell.today .calendar-day-number {
+  background-color: #0052cc;
+  color: #ffffff;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; 
+}
+
+.calendar-task {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  color: #172b4d;
+  font-weight: 500;
+}
+
+.calendar-task.alta { background-color: #ffebe6; border-left: 3px solid #bf2600; }
+.calendar-task.media { background-color: #fff0b3; border-left: 3px solid #ff8b00; }
+.calendar-task.baja { background-color: #e3fcef; border-left: 3px solid #36b37e; }
+
 /* ==========================================
    9. MENÚ HAMBURGUESA Y RESPONSIVE (MÓVILES)
    ========================================== */
-
-/* Ocultar elementos en escritorio por defecto */
-.btn-hamburger {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #0f172a;
-  padding: 0;
-}
-.btn-close-sidebar {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #5e6c84;
-}
-.mobile-logo {
-  display: none;
-}
+.btn-hamburger { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #0f172a; padding: 0; }
+.btn-close-sidebar { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #5e6c84; }
+.mobile-logo { display: none; }
 
 @media (max-width: 768px) {
   
-  /* 1. Cabecera tipo App Nativa */
   .top-header {
     display: flex;
     flex-wrap: wrap; 
@@ -577,19 +526,14 @@ body {
     position: relative; 
   }
 
-  .btn-hamburger {
-    display: block;
-    color: #ffffff; 
-    order: 1; 
-  }
+  .btn-hamburger { display: block; color: #ffffff; order: 1; }
 
-  /* Logo en blanco y centrado absolutamente */
   .mobile-logo {
     display: block;
     color: #ffffff;
     font-size: 1.1rem; 
     position: absolute;
-    top: 1.25rem; /* Ajuste para que quede alineado con los botones */
+    top: 1.25rem; 
     left: 50%;
     transform: translateX(-50%);
     margin: 0;
@@ -597,24 +541,15 @@ body {
     z-index: 2; 
   }
 
-  /* Buscador en la parte derecha (Solo lupa) */
-  .header-search {
-    order: 2; 
-    width: auto; 
-    margin-top: 0; 
-  }
+  .header-search { order: 2; width: auto; margin-top: 0; }
+  .header-search input { display: none; }
   
-  .header-search input { 
-    display: none; /* Ocultamos el cuadro de texto blanco */
-  }
-
-  /* Al añadir esta clase con JS, el buscador aparece flotando */
   .header-search input.show-mobile {
     display: block;
     position: absolute;
-    top: 4rem; /* Se coloca justo debajo de la barra azul */
+    top: 4rem; 
     left: 1rem;
-    width: calc(100% - 2rem); /* Ocupa el ancho de la pantalla dejando un margen */
+    width: calc(100% - 2rem); 
     padding: 0.8rem;
     border: 1px solid #dfe1e6;
     border-radius: 8px;
@@ -623,7 +558,7 @@ body {
   }
 
   .btn-search-mobile {
-    display: block; /* Mostramos la lupa */
+    display: block; 
     background: none;
     border: none;
     font-size: 1.3rem;
@@ -632,10 +567,9 @@ body {
     padding: 0;
   }
 
-  /* 2. Contadores (Tarjetas verticales) */
   .header-stats {
     width: 100%;
-    order: 3; /* Pasan debajo de la primera línea */
+    order: 3; 
     display: flex;
     justify-content: space-between;
     gap: 0.5rem;
@@ -656,13 +590,8 @@ body {
     font-weight: 500;
   }
 
-  .stat-badge b {
-    color: #0f172a; 
-    font-size: 1rem;
-    margin-top: 0.2rem; 
-  }
+  .stat-badge b { color: #0f172a; font-size: 1rem; margin-top: 0.2rem; }
 
-  /* 3. Menú Lateral Flotante (Off-Canvas) */
   .sidebar {
     display: flex;
     flex-direction: column;
@@ -680,47 +609,16 @@ body {
     box-sizing: border-box;
   }
 
-  .btn-close-sidebar {
-    display: block;
-  }
+  .btn-close-sidebar { display: block; }
+  .sidebar-logo { text-align: left; }
+  .sidebar-logo h2 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+  .sidebar-section { display: flex; flex-direction: column; gap: 0.5rem; }
+  .sidebar.open { left: 0; }
+
+  .app-container { display: block; height: auto; overflow-y: visible; }
+  .main-content { padding: 0; }
+  .toolbar { padding: 1rem; flex-direction: row; flex-wrap: wrap; gap: 1rem; box-sizing: border-box; }
   
-  .sidebar-logo {
-    text-align: left; 
-  }
-  .sidebar-logo h2 { 
-    font-size: 1.2rem; 
-    margin-bottom: 0.5rem;
-  }
-
-  .sidebar-section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .sidebar.open {
-    left: 0; 
-  }
-
-  /* 4. Estructura general de la App en móvil */
-  .app-container {
-    display: block; 
-    height: auto; 
-    overflow-y: visible; 
-  }
-
-  .main-content {
-    padding: 0; 
-  }
-
-  .toolbar {
-    padding: 1rem;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 1rem;
-    box-sizing: border-box;
-  }
-
   .kanban-board {
     flex-direction: column;
     padding: 0 1rem 1rem 1rem;
@@ -729,34 +627,21 @@ body {
     box-sizing: border-box;
   }
 
-  .kanban-column {
-    width: 100%; 
-    min-width: auto;
-    padding: 1rem;
-    box-sizing: border-box;
-    margin-bottom: 1.5rem;
-  }
-
-  .task-card {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .card-footer {
-    flex-wrap: wrap; 
-    gap: 0.8rem;
-  }
-
+  .kanban-column { width: 100%; min-width: auto; padding: 1rem; box-sizing: border-box; margin-bottom: 1.5rem; }
+  .task-card { width: 100%; box-sizing: border-box; }
+  .card-footer { flex-wrap: wrap; gap: 0.8rem; }
   .list-header { display: none; }
-  .list-row { 
-    grid-template-columns: 1fr; 
-    gap: 0.8rem; 
-  }
+  .list-row { grid-template-columns: 1fr; gap: 0.8rem; }
   .list-row-title p { white-space: normal; }
+  .modal { width: 90%; padding: 1.5rem; box-sizing: border-box; }
 
-  .modal {
-    width: 90%;
-    padding: 1.5rem;
-    box-sizing: border-box;
+  /* Vista de Calendario en Móvil */
+  .calendar-board { padding: 1rem 0.5rem; }
+  .calendar-header { flex-direction: column; gap: 1rem; text-align: center; }
+  .calendar-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; 
+    border-radius: 4px;
   }
+  .calendar-weekdays, .calendar-days { min-width: 750px; }
 }
