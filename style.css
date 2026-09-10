@@ -542,15 +542,32 @@ body {
   }
 
   /* --- INICIO DE LA CORRECCIÓN DEL BUSCADOR --- */
-  .header-search { order: 2; width: 100%; margin-top: 0; }
+  .header-search { 
+    order: 2; 
+    flex: 1; /* Ocupa el espacio disponible a la derecha del menú */
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: flex-end; /* Mantiene el contenido pegado a la derecha */
+    margin-top: 0; 
+  }
   .header-search input { display: none; }
   
+  .btn-search-mobile {
+    order: 1; /* Esto fuerza a la lupa a quedarse arriba */
+    display: block; 
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 0;
+  }
+
   .header-search input.show-mobile {
+    order: 2; /* Esto hace que el buscador se posicione debajo de la lupa */
     display: block;
     position: relative; 
-    top: 0; 
-    left: 0;
-    width: 100%; 
+    width: 100%; /* Ocupa todo el espacio de su contenedor sin desbordarse */
     padding: 0.8rem;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
@@ -561,16 +578,6 @@ body {
     z-index: 50;
   }
   /* --- FIN DE LA CORRECCIÓN --- */
-
-  .btn-search-mobile {
-    display: block; 
-    background: none;
-    border: none;
-    font-size: 1.3rem;
-    color: #ffffff;
-    cursor: pointer;
-    padding: 0;
-  }
 
   .header-stats {
     width: 100%;
